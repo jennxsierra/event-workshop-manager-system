@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PARTICIPANT
+  STAFF
+  ADMIN
+}
+
+enum EventCategory {
+  WORKSHOP
+  TRAINING
+  PUBLIC_OUTREACH
+  PRESS
+  LAUNCH
+}
+
+model User {
+  id           BigInt    @id @default(autoincrement())
+  username     String    @unique
+  passwordHash String    @map("password_hash")
+  firstName    String    @map("first_name")
+  lastName     String    @map("last_name")
+  email        String    @unique
+  phone        String?
+  organization String?
+  role         Role      @default(PARTICIPANT)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+  eventsCreated   Event[] @relation("CreatedBy")
+  eventsUpdated   Event[] @relation("UpdatedBy")
+  registrations   Registration[]
+}
+
+model Event {
+  id         BigInt      @id @default(autoincrement())
+  name       String
+  eventDate  DateTime    @map("event_date")
+  startTime  DateTime    @map("start_time")
+  endTime    DateTime?   @map("end_time")
+  location   String
+  category   EventCategory
+  capacity   Int
+  createdBy  User?       @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById BigInt?    @map("created_by")
+  updatedBy  User?       @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  updatedById BigInt?    @map("updated_by")
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+  registrations Registration[]
+
+  @@index([eventDate], name: "idx_events_event_date")
+  @@index([category],  name: "idx_events_category")
+}
+
+model Registration {
+  id            BigInt   @id @default(autoincrement())
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId       BigInt   @map("event_id")
+  participant   User?    @relation(fields: [participantId], references: [id], onDelete: SetNull)
+  participantId BigInt?  @map("participant_id")
+  registeredAt  DateTime @default(now()) @map("registered_at")
+  cancelled     Boolean  @default(false)
+  cancelledAt   DateTime? @map("cancelled_at")
+
+  @@unique([eventId, participantId])
+  @@index([eventId],       name: "idx_regs_event")
+  @@index([participantId], name: "idx_regs_participant")
+}
