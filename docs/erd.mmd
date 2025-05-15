@@ -1,0 +1,48 @@
+erDiagram
+    USER_ROLES {
+        VARCHAR role PK
+    }
+    EVENT_CATEGORIES {
+        VARCHAR category PK
+    }
+    USERS {
+        UUID id PK
+        VARCHAR username
+        VARCHAR email
+        VARCHAR first_name
+        VARCHAR last_name
+        VARCHAR phone
+        VARCHAR organization
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        TIMESTAMP deleted_at
+        VARCHAR role FK
+    }
+    EVENTS {
+        UUID id PK
+        VARCHAR name
+        DATE event_date
+        TIME event_time
+        VARCHAR location
+        INTEGER capacity
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        UUID created_by FK
+        UUID updated_by FK
+        VARCHAR category FK
+    }
+    REGISTRATIONS {
+        UUID id PK
+        UUID event_id FK
+        UUID participant_id FK
+        BOOLEAN cancelled
+        TIMESTAMP cancelled_at
+        TIMESTAMP created_at
+    }
+
+    USER_ROLES ||--o{ USERS : "assigned_to"
+    EVENT_CATEGORIES ||--o{ EVENTS : "classified_as"
+    USERS ||--o{ EVENTS : "created_by"
+    USERS ||--o{ EVENTS : "updated_by"
+    EVENTS ||--o{ REGISTRATIONS : "has_registrations"
+    USERS ||--o{ REGISTRATIONS : "makes"

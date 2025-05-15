@@ -1,0 +1,98 @@
+classDiagram
+    %% Enumeration Classes
+    class Role {
+        <<enumeration>>
+        PARTICIPANT
+        STAFF
+        ADMIN
+    }
+    class EventCategory {
+        <<enumeration>>
+        WORKSHOP
+        TRAINING
+        PUBLIC_OUTREACH
+        PRESS
+        LAUNCH
+    }
+
+    %% User Hierarchy
+    class User {
+        <<abstract>>
+        - username: string
+        - password: string
+        - firstName: string
+        - lastName: string
+        - email: string
+        - phone: string
+        - organization: string
+        - role: Role
+        + getters/setters()
+        + User(username, password, firstName, lastName, email, phone, organization, role)
+        + login(): bool
+        + logout(): void
+    }
+    class Participant {
+        + Participant(username, password, firstName, lastName, email, phone, organization)
+        + registerForEvent(e: Event): bool
+        + cancelRegistration(e: Event): bool
+        + viewRegisteredEvents(em: EventManager): Event[]
+    }
+    class Staff {
+        + Staff(username, password, firstName, lastName, email, phone, organization)
+        + updateEvent(e: Event): void
+    }
+    class Administrator {
+        + Administrator(username, password, firstName, lastName, email, phone, organization)
+        + updateUser(): void
+        + generateReports(): void
+    }
+
+    %% Core Domain Classes
+    class Event {
+        - name: string
+        - date: Date
+        - time: Time
+        - location: string
+        - category: EventCategory
+        - capacity: int
+        - registrations: Registration[]
+        + getters/setters()
+        + Event(name, date, time, location, category, capacity)
+        + addRegistration(r: Registration): void
+        + removeRegistration(r: Registration): void
+    }
+    class Registration {
+        - timestamp: DateTime
+        - cancelled: bool
+        + Registration(timestamp: DateTime)
+        + cancel(): void
+        + isCancelled(): bool
+    }
+
+    %% Manager Classes
+    class EventManager {
+        - events: Event[]
+        + EventManager()
+        + createEvent(e: Event, currentUser: User): bool
+        + updateEvent(e: Event, currentUser: User): bool
+        + deleteEvent(e: Event, currentUser: User): bool
+        + getEvents(): Event[]
+    }
+    class ReportManager {
+        - eventManager: EventManager
+        + ReportManager(eventManager: EventManager)
+        + generateSummaryReport(): Report
+        + generateDetailedReport(): Report
+        + generateHistoricalReport(): Report
+    }
+
+    %% Relationships
+    User <|-- Participant
+    Participant <|-- Staff
+    Staff <|-- Administrator
+
+    Event *-- Registration : composes
+    EventManager o-- Event : aggregates
+    ReportManager o-- EventManager : uses
+
+    Participant --> Registration : makes
