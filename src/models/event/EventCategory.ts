@@ -1,0 +1,7 @@
+export enum EventCategory {
+  WORKSHOP = "WORKSHOP",
+  TRAINING = "TRAINING",
+  PUBLIC_OUTREACH = "PUBLIC_OUTREACH",
+  PRESS = "PRESS",
+  LAUNCH = "LAUNCH",
+}
