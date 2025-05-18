@@ -1,0 +1,13 @@
+footer {
+  margin-top: auto;
+  background-color: var(--dark);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+footer a {
+  color: var(--secondary);
+}
+
+footer a:hover {
+  color: #e0b13a; /* Lighter variation */
+}

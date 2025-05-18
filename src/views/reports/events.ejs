@@ -1,0 +1,167 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Event Reports</h1>
+    <a href="/reports" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back to Reports</a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <h2 class="display-4 mb-0"><%= stats.totalEvents || 0 %></h2>
+                <p class="mb-0">Total Events</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <h2 class="display-4 mb-0"><%= stats.upcomingEvents || 0 %></h2>
+                <p class="mb-0">Upcoming Events</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <h2 class="display-4 mb-0"><%= stats.pastEvents || 0 %></h2>
+                <p class="mb-0">Past Events</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <h2 class="display-4 mb-0"><%= stats.avgRegistrations?.toFixed(1) || 0 %></h2>
+                <p class="mb-0">Avg. Registrations</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card h-100">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Event Registration Trends</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="registrationTrends" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Events by Category</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="eventsByCategory" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Event Performance Summary</h5>
+            <a href="/reports/events/export" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-download"></i> Export to CSV
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Registrations</th>
+                        <th>Capacity</th>
+                        <th>Fill Rate</th>
+                        <th>Attendance Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(locals.eventData && eventData.length > 0) { %>
+                        <% eventData.forEach(event => { %>
+                            <tr>
+                                <td><a href="/events/<%= event.id %>"><%= event.name %></a></td>
+                                <td><%= formatDate(event.date) %></td>
+                                <td><%= event.category %></td>
+                                <td><%= event.registrationCount %></td>
+                                <td><%= event.capacity %></td>
+                                <td><%= calculatePercentage(event.registrationCount, event.capacity) %>%</td>
+                                <td><%= calculatePercentage(event.attendedCount, event.registrationCount) %>%</td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="7" class="text-center">No event data available</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // This is just a placeholder - actual data would be passed from the server
+    const trendsChart = new Chart(document.getElementById('registrationTrends'), {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+            datasets: [{
+                label: 'Registrations',
+                data: [65, 78, 56, 84, 105, 130, 102],
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+    
+    const categoryChart = new Chart(document.getElementById('eventsByCategory'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Workshop', 'Training', 'Public Outreach', 'Press', 'Launch'],
+            datasets: [{
+                data: [30, 25, 20, 15, 10],
+                backgroundColor: [
+                    '#0dcaf0', // info
+                    '#0d6efd', // primary
+                    '#198754', // success
+                    '#ffc107', // warning
+                    '#dc3545'  // danger
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+});
+</script>
+
+<% function formatDate(date) {
+    return new Date(date).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric'
+    });
+} %>
+
+<% function calculatePercentage(value, total) {
+    if (!total) return 0;
+    return Math.round((value / total) * 100);
+} %>

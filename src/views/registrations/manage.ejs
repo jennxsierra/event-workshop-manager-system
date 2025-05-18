@@ -1,0 +1,155 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Manage Registrations</h1>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Filter Registrations</h5>
+    </div>
+    <div class="card-body">
+        <form action="/registrations/manage" method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label for="eventId" class="form-label">Event</label>
+                <select class="form-select" id="eventId" name="eventId">
+                    <option value="">All Events</option>
+                    <% if (locals.events && events.length > 0) { %>
+                        <% events.forEach(event => { %>
+                            <option value="<%= event.id %>" 
+                                <%= locals.filters?.eventId == event.id ? 'selected' : '' %>>
+                                <%= event.name %>
+                            </option>
+                        <% }); %>
+                    <% } %>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">All Statuses</option>
+                    <option value="active" <%= locals.filters?.status === 'active' ? 'selected' : '' %>>Active</option>
+                    <option value="attended" <%= locals.filters?.status === 'attended' ? 'selected' : '' %>>Attended</option>
+                    <option value="cancelled" <%= locals.filters?.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="search" class="form-label">Search</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       placeholder="Name or email" value="<%= locals.filters?.search || '' %>">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="d-grid gap-2 w-100">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-light">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Registration List</h5>
+            <a href="/reports/registrations/export<%= locals.queryString ? '?' + locals.queryString : '' %>" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-download"></i> Export to CSV
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <% if (registrations.length > 0) { %>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Participant</th>
+                            <th>Date</th>
+                            <th>Registration Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% registrations.forEach(reg => { %>
+                            <tr>
+                                <td>
+                                    <a href="/events/<%= reg.event.id %>"><%= reg.event.name %></a>
+                                    <small class="d-block text-muted"><%= formatDate(reg.event.date) %></small>
+                                </td>
+                                <td>
+                                    <% if(reg.participant) { %>
+                                        <%= reg.participant.firstName %> <%= reg.participant.lastName %>
+                                        <small class="d-block text-muted"><%= reg.participant.email %></small>
+                                    <% } else { %>
+                                        <em>Deleted User</em>
+                                    <% } %>
+                                </td>
+                                <td><%= formatDate(reg.event.date) %></td>
+                                <td><%= formatDateTime(reg.registeredAt) %></td>
+                                <td>
+                                    <% if(reg.cancelled) { %>
+                                        <span class="badge bg-danger">Cancelled</span>
+                                        <small class="d-block text-muted"><%= formatDateTime(reg.cancelledAt) %></small>
+                                    <% } else if(reg.attended) { %>
+                                        <span class="badge bg-success">Attended</span>
+                                    <% } else { %>
+                                        <span class="badge bg-info">Registered</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <% if(!reg.cancelled) { %>
+                                            <form action="/registrations/<%= reg.id %>/attendance" method="POST">
+                                                <input type="hidden" name="attended" value="<%= reg.attended ? 'false' : 'true' %>">
+                                                <button type="submit" class="btn btn-outline-<%= reg.attended ? 'warning' : 'success' %>">
+                                                    <%= reg.attended ? 'Mark Not Attended' : 'Mark Attended' %>
+                                                </button>
+                                            </form>
+                                            <form action="/registrations/<%= reg.id %>/cancel" method="POST" class="ms-2">
+                                                <button type="submit" class="btn btn-outline-danger" 
+                                                        onclick="return confirm('Are you sure you want to cancel this registration?')">
+                                                    Cancel
+                                                </button>
+                                            </form>
+                                        <% } else { %>
+                                            <form action="/registrations/<%= reg.id %>/restore" method="POST">
+                                                <button type="submit" class="btn btn-outline-success">
+                                                    Restore
+                                                </button>
+                                            </form>
+                                        <% } %>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            
+            <% if(locals.pagination) { %>
+                <%- include('../partials/pagination', { pagination: pagination }) %>
+            <% } %>
+        <% } else { %>
+            <div class="alert alert-info">
+                No registrations found matching your criteria.
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<% function formatDate(date) {
+    return new Date(date).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric'
+    });
+} %>
+
+<% function formatDateTime(dateTime) {
+    return new Date(dateTime).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+} %>

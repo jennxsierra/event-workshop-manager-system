@@ -1,0 +1,212 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Attendance Reports</h1>
+    <a href="/reports" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back to Reports</a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <h2 class="display-4 mb-0"><%= stats.totalRegistrations || 0 %></h2>
+                <p class="mb-0">Total Registrations</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <h2 class="display-4 mb-0"><%= stats.attendedCount || 0 %></h2>
+                <p class="mb-0">Attended</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <h2 class="display-4 mb-0"><%= stats.cancelledCount || 0 %></h2>
+                <p class="mb-0">Cancellations</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <h2 class="display-4 mb-0"><%= stats.attendanceRate?.toFixed(1) || 0 %>%</h2>
+                <p class="mb-0">Attendance Rate</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card h-100">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Attendance by Event Category</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="attendanceByCategory" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Registration Status</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="registrationStatus" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Filter Attendance Data</h5>
+        </div>
+    </div>
+    <div class="card-body">
+        <form action="/reports/attendance" method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label for="eventCategory" class="form-label">Event Category</label>
+                <select class="form-select" id="eventCategory" name="category">
+                    <option value="">All Categories</option>
+                    <option value="WORKSHOP" <%= filters?.category === 'WORKSHOP' ? 'selected' : '' %>>Workshop</option>
+                    <option value="TRAINING" <%= filters?.category === 'TRAINING' ? 'selected' : '' %>>Training</option>
+                    <option value="PUBLIC_OUTREACH" <%= filters?.category === 'PUBLIC_OUTREACH' ? 'selected' : '' %>>Public Outreach</option>
+                    <option value="PRESS" <%= filters?.category === 'PRESS' ? 'selected' : '' %>>Press</option>
+                    <option value="LAUNCH" <%= filters?.category === 'LAUNCH' ? 'selected' : '' %>>Launch</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="startDate" class="form-label">Start Date</label>
+                <input type="date" class="form-control" id="startDate" name="startDate" value="<%= filters?.startDate || '' %>">
+            </div>
+            <div class="col-md-3">
+                <label for="endDate" class="form-label">End Date</label>
+                <input type="date" class="form-control" id="endDate" name="endDate" value="<%= filters?.endDate || '' %>">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="d-grid w-100">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-light">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Event Attendance Details</h5>
+            <a href="/reports/attendance/export<%= locals.queryString ? '?' + locals.queryString : '' %>" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-download"></i> Export to CSV
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Registrations</th>
+                        <th>Attended</th>
+                        <th>Cancelled</th>
+                        <th>Attendance Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(locals.attendanceData && attendanceData.length > 0) { %>
+                        <% attendanceData.forEach(event => { %>
+                            <tr>
+                                <td><a href="/events/<%= event.id %>"><%= event.name %></a></td>
+                                <td><%= formatDate(event.date) %></td>
+                                <td><%= event.category %></td>
+                                <td><%= event.totalRegistrations %></td>
+                                <td><%= event.attendedCount %></td>
+                                <td><%= event.cancelledCount %></td>
+                                <td><%= calculatePercentage(event.attendedCount, event.totalRegistrations - event.cancelledCount) %>%</td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="7" class="text-center">No attendance data available</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // This is just a placeholder - actual data would be passed from the server
+    const categoryChart = new Chart(document.getElementById('attendanceByCategory'), {
+        type: 'bar',
+        data: {
+            labels: ['Workshop', 'Training', 'Public Outreach', 'Press', 'Launch'],
+            datasets: [{
+                label: 'Registered',
+                data: [80, 65, 50, 30, 20],
+                backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                barPercentage: 0.6
+            }, {
+                label: 'Attended',
+                data: [60, 45, 40, 25, 15],
+                backgroundColor: 'rgba(25, 135, 84, 0.7)',
+                barPercentage: 0.6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    stacked: false
+                },
+                y: {
+                    stacked: false
+                }
+            }
+        }
+    });
+    
+    const statusChart = new Chart(document.getElementById('registrationStatus'), {
+        type: 'pie',
+        data: {
+            labels: ['Attended', 'No-Shows', 'Cancelled'],
+            datasets: [{
+                data: [65, 20, 15],
+                backgroundColor: [
+                    '#198754', // success
+                    '#ffc107', // warning
+                    '#dc3545'  // danger
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+});
+</script>
+
+<% function formatDate(date) {
+    return new Date(date).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric'
+    });
+} %>
+
+<% function calculatePercentage(value, total) {
+    if (!total) return 0;
+    return Math.round((value / total) * 100);
+} %>

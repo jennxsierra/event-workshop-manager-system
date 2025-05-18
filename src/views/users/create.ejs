@@ -1,0 +1,79 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Create New User</h1>
+    <a href="/users" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back to Users</a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">User Details</h5>
+    </div>
+    <div class="card-body">
+        <form action="/users" method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" 
+                           value="<%= locals.formData?.firstName || '' %>" required>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" 
+                           value="<%= locals.formData?.lastName || '' %>" required>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" 
+                       value="<%= locals.formData?.username || '' %>" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" 
+                       value="<%= locals.formData?.email || '' %>" required>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="phone" class="form-label">Phone (optional)</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" 
+                           value="<%= locals.formData?.phone || '' %>">
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="organization" class="form-label">Organization (optional)</label>
+                    <input type="text" class="form-control" id="organization" name="organization" 
+                           value="<%= locals.formData?.organization || '' %>">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <select class="form-select" id="role" name="role" required>
+                    <option value="USER" <%= locals.formData?.role === 'USER' ? 'selected' : '' %>>User</option>
+                    <option value="STAFF" <%= locals.formData?.role === 'STAFF' ? 'selected' : '' %>>Staff</option>
+                    <option value="ADMIN" <%= locals.formData?.role === 'ADMIN' ? 'selected' : '' %>>Administrator</option>
+                </select>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="reset" class="btn btn-outline-secondary">Reset</button>
+                <button type="submit" class="btn btn-primary">Create User</button>
+            </div>
+        </form>
+    </div>
+</div>

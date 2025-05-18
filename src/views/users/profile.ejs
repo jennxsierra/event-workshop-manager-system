@@ -1,0 +1,124 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>My Profile</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Personal Information</h5>
+            </div>
+            <div class="card-body">
+                <form action="/users/profile?_method=PUT" method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" 
+                                value="<%= user.firstName %>" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" 
+                                value="<%= user.lastName %>" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" 
+                            value="<%= user.username %>" readonly>
+                        <div class="form-text">Username cannot be changed.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                            value="<%= user.email %>" required>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone (optional)</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" 
+                                value="<%= user.phone || '' %>">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="organization" class="form-label">Organization (optional)</label>
+                            <input type="text" class="form-control" id="organization" name="organization" 
+                                value="<%= user.organization || '' %>">
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Change Password</h5>
+            </div>
+            <div class="card-body">
+                <form action="/users/profile/password?_method=PUT" method="POST">
+                    <div class="mb-3">
+                        <label for="currentPassword" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirmNewPassword" name="confirmNewPassword" required>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Account Summary</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Role:</strong> <%= user.role %></p>
+                <p><strong>Member Since:</strong> <%= formatDateTime(user.createdAt) %></p>
+                <p><strong>Last Updated:</strong> <%= formatDateTime(user.updatedAt) %></p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Activity Summary</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Registrations:</strong> <%= locals.stats?.registrations || 0 %></p>
+                <p><strong>Events Attended:</strong> <%= locals.stats?.attended || 0 %></p>
+                <p><strong>Upcoming Events:</strong> <%= locals.stats?.upcoming || 0 %></p>
+                <div class="d-grid">
+                    <a href="/registrations" class="btn btn-outline-primary">View My Registrations</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% function formatDateTime(dateTime) {
+    return new Date(dateTime).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+} %>

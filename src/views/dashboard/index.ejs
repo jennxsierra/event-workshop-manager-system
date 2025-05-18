@@ -1,0 +1,169 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Dashboard</h1>
+</div>
+
+<% if (locals.user) { %>
+    <% if (locals.user.role === 'ADMIN') { %>
+        <%- include('./admin') %>
+    <% } else if (locals.user.role === 'STAFF') { %>
+        <%- include('./staff') %>
+    <% } else { %>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Welcome, <%= user.firstName %>!</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Welcome to your Event & Workshop Management System dashboard. Here you can manage your registrations and access upcoming events.</p>
+                        
+                        <div class="mt-4">
+                            <h6>Quick Actions</h6>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="d-grid">
+                                        <a href="/events" class="btn btn-outline-primary">
+                                            <i class="bi bi-calendar-event"></i> Browse Events
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="d-grid">
+                                        <a href="/registrations" class="btn btn-outline-primary">
+                                            <i class="bi bi-ticket"></i> My Registrations
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="d-grid">
+                                        <a href="/users/profile" class="btn btn-outline-primary">
+                                            <i class="bi bi-person"></i> My Profile
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Upcoming Events</h5>
+                            <a href="/events" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <% if (locals.upcomingEvents && upcomingEvents.length > 0) { %>
+                            <div class="list-group">
+                                <% upcomingEvents.forEach(event => { %>
+                                    <a href="/events/<%= event.id %>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1"><%= event.name %></h6>
+                                            <small class="text-muted">
+                                                <i class="bi bi-calendar"></i> <%= formatDate(event.date) %> |
+                                                <i class="bi bi-clock"></i> <%= formatTime(event.time) %> |
+                                                <i class="bi bi-geo-alt"></i> <%= event.location %>
+                                            </small>
+                                        </div>
+                                        <span class="badge bg-<%= getBadgeClass(event.category) %>"><%= event.category %></span>
+                                    </a>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="alert alert-info mb-0">
+                                No upcoming events found. Check the <a href="/events">events page</a> for new events.
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">My Registration Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Upcoming Events:</span>
+                            <strong><%= locals.userStats?.upcoming || 0 %></strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Past Events:</span>
+                            <strong><%= locals.userStats?.past || 0 %></strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Cancelled:</span>
+                            <strong><%= locals.userStats?.cancelled || 0 %></strong>
+                        </div>
+                        <hr>
+                        <div class="d-grid">
+                            <a href="/registrations" class="btn btn-outline-primary">View My Registrations</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Event Categories</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            <a href="/events?category=WORKSHOP" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Workshops
+                                <span class="badge bg-info rounded-pill"><%= locals.eventCounts?.WORKSHOP || 0 %></span>
+                            </a>
+                            <a href="/events?category=TRAINING" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Training
+                                <span class="badge bg-primary rounded-pill"><%= locals.eventCounts?.TRAINING || 0 %></span>
+                            </a>
+                            <a href="/events?category=PUBLIC_OUTREACH" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Public Outreach
+                                <span class="badge bg-success rounded-pill"><%= locals.eventCounts?.PUBLIC_OUTREACH || 0 %></span>
+                            </a>
+                            <a href="/events?category=PRESS" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Press
+                                <span class="badge bg-warning rounded-pill"><%= locals.eventCounts?.PRESS || 0 %></span>
+                            </a>
+                            <a href="/events?category=LAUNCH" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Launch
+                                <span class="badge bg-danger rounded-pill"><%= locals.eventCounts?.LAUNCH || 0 %></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } %>
+<% } else { %>
+    <div class="alert alert-info">
+        Please <a href="/auth/login">log in</a> to view your dashboard.
+    </div>
+<% } %>
+
+<% function formatDate(date) {
+    return new Date(date).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric'
+    });
+} %>
+
+<% function formatTime(time) {
+    return new Date(time).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+} %>
+
+<% function getBadgeClass(category) {
+    switch(category) {
+        case 'WORKSHOP': return 'info';
+        case 'TRAINING': return 'primary';
+        case 'PUBLIC_OUTREACH': return 'success';
+        case 'PRESS': return 'warning';
+        case 'LAUNCH': return 'danger';
+        default: return 'secondary';
+    }
+} %>

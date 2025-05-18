@@ -1,0 +1,291 @@
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <h2 class="display-4 mb-0"><%= locals.stats?.totalEvents || 0 %></h2>
+                <p class="mb-0">Events</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <h2 class="display-4 mb-0"><%= locals.stats?.totalWorkshops || 0 %></h2>
+                <p class="mb-0">Workshops</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <h2 class="display-4 mb-0"><%= locals.stats?.totalRegistrations || 0 %></h2>
+                <p class="mb-0">Registrations</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <h2 class="display-4 mb-0"><%= locals.stats?.totalUsers || 0 %></h2>
+                <p class="mb-0">Users</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Admin Dashboard</h5>
+            </div>
+            <div class="card-body">
+                <p>Welcome to the administrator dashboard. Here you can manage all aspects of the Event & Workshop Management System.</p>
+                
+                <div class="mt-4">
+                    <h6>Quick Actions</h6>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="d-grid">
+                                <a href="/events/new" class="btn btn-outline-primary">
+                                    <i class="bi bi-calendar-plus"></i> Create Event
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="d-grid">
+                                <a href="/users/create" class="btn btn-outline-primary">
+                                    <i class="bi bi-person-plus"></i> Add User
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="d-grid">
+                                <a href="/reports" class="btn btn-outline-primary">
+                                    <i class="bi bi-graph-up"></i> Reports
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="d-grid">
+                                <a href="/settings" class="btn btn-outline-primary">
+                                    <i class="bi bi-gear"></i> Settings
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Recent Events</h5>
+                            <a href="/events" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <% if (locals.recentEvents && recentEvents.length > 0) { %>
+                            <div class="list-group">
+                                <% recentEvents.slice(0, 5).forEach(event => { %>
+                                    <a href="/events/<%= event.id %>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1"><%= event.name %></h6>
+                                            <small class="text-muted">
+                                                <i class="bi bi-calendar"></i> <%= formatDate(event.date) %>
+                                            </small>
+                                        </div>
+                                        <span class="badge bg-<%= getBadgeClass(event.category) %>"><%= event.category %></span>
+                                    </a>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="alert alert-info mb-0">
+                                No recent events.
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Recent Users</h5>
+                            <a href="/users" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <% if (locals.recentUsers && recentUsers.length > 0) { %>
+                            <div class="list-group">
+                                <% recentUsers.slice(0, 5).forEach(user => { %>
+                                    <a href="/users/<%= user.id %>/edit" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1"><%= user.firstName %> <%= user.lastName %></h6>
+                                            <small class="text-muted"><%= user.email %></small>
+                                        </div>
+                                        <span class="badge bg-<%= getRoleBadgeClass(user.role) %>"><%= user.role %></span>
+                                    </a>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="alert alert-info mb-0">
+                                No recent users.
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Registration Activity</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="registrationChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">System Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <span>System Version:</span>
+                    <strong>1.0.0</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Last Backup:</span>
+                    <strong><%= locals.systemInfo?.lastBackup || 'Never' %></strong>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Storage Usage:</span>
+                    <strong><%= locals.systemInfo?.storageUsage || '0%' %></strong>
+                </div>
+                <div class="progress mb-3">
+                    <div class="progress-bar" role="progressbar" style="width: <%= locals.systemInfo?.storagePercentage || 0 %>%"></div>
+                </div>
+                <hr>
+                <div class="d-grid">
+                    <a href="/system/settings" class="btn btn-outline-primary">System Settings</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Upcoming Events</h5>
+            </div>
+            <div class="card-body">
+                <% if (locals.upcomingEvents && upcomingEvents.length > 0) { %>
+                    <ul class="list-group list-group-flush">
+                        <% upcomingEvents.slice(0, 3).forEach(event => { %>
+                            <li class="list-group-item px-0">
+                                <h6 class="mb-1"><%= event.name %></h6>
+                                <p class="mb-1 text-muted">
+                                    <i class="bi bi-calendar"></i> <%= formatDate(event.date) %>
+                                </p>
+                                <p class="mb-0 small">
+                                    <strong>Registrations:</strong> <%= event.registrations?.length || 0 %>/<%= event.capacity %>
+                                </p>
+                                <div class="progress mt-2" style="height: 5px;">
+                                    <% const fillPercentage = event.capacity ? (event.registrations?.length || 0) / event.capacity * 100 : 0; %>
+                                    <div class="progress-bar" role="progressbar" style="width: <%= fillPercentage %>%"></div>
+                                </div>
+                            </li>
+                        <% }); %>
+                    </ul>
+                <% } else { %>
+                    <p class="text-center">No upcoming events</p>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">User Activity</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="userActivityChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Registration Chart
+    const registrationCtx = document.getElementById('registrationChart').getContext('2d');
+    new Chart(registrationCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Registrations',
+                data: <%= JSON.stringify(locals.registrationData || [25, 30, 45, 60, 75, 80]) %>,
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // User Activity Chart
+    const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
+    new Chart(userActivityCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Admin', 'Staff', 'Users'],
+            datasets: [{
+                data: <%= JSON.stringify(locals.userRoleData || [3, 8, 45]) %>,
+                backgroundColor: ['#dc3545', '#ffc107', '#0dcaf0']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+});
+</script>
+
+<% function formatDate(date) {
+    return new Date(date).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric'
+    });
+} %>
+
+<% function getBadgeClass(category) {
+    switch(category) {
+        case 'WORKSHOP': return 'info';
+        case 'TRAINING': return 'primary';
+        case 'PUBLIC_OUTREACH': return 'success';
+        case 'PRESS': return 'warning';
+        case 'LAUNCH': return 'danger';
+        default: return 'secondary';
+    }
+} %>
+
+<% function getRoleBadgeClass(role) {
+    switch(role) {
+        case 'ADMIN': return 'danger';
+        case 'STAFF': return 'warning';
+        case 'USER': return 'info';
+        default: return 'secondary';
+    }
+} %>

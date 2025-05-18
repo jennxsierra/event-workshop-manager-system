@@ -1,0 +1,118 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Data Exports</h1>
+    <a href="/reports" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back to Reports</a>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Event Data</h5>
+            </div>
+            <div class="card-body">
+                <p>Export complete event data including details, capacity, and location information.</p>
+                <form action="/reports/events/export" method="GET">
+                    <div class="mb-3">
+                        <label for="eventCategory" class="form-label">Category Filter (Optional)</label>
+                        <select class="form-select" id="eventCategory" name="category">
+                            <option value="">All Categories</option>
+                            <option value="WORKSHOP">Workshop</option>
+                            <option value="TRAINING">Training</option>
+                            <option value="PUBLIC_OUTREACH">Public Outreach</option>
+                            <option value="PRESS">Press</option>
+                            <option value="LAUNCH">Launch</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventStartDate" class="form-label">Start Date (Optional)</label>
+                        <input type="date" class="form-control" id="eventStartDate" name="startDate">
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventEndDate" class="form-label">End Date (Optional)</label>
+                        <input type="date" class="form-control" id="eventEndDate" name="endDate">
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-download"></i> Export Events (CSV)
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Registration Data</h5>
+            </div>
+            <div class="card-body">
+                <p>Export registration data including participant details and registration status.</p>
+                <form action="/reports/registrations/export" method="GET">
+                    <div class="mb-3">
+                        <label for="regEventId" class="form-label">Event Filter (Optional)</label>
+                        <select class="form-select" id="regEventId" name="eventId">
+                            <option value="">All Events</option>
+                            <% if (locals.events && events.length > 0) { %>
+                                <% events.forEach(event => { %>
+                                    <option value="<%= event.id %>"><%= event.name %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="regStatus" class="form-label">Registration Status (Optional)</label>
+                        <select class="form-select" id="regStatus" name="status">
+                            <option value="">All Statuses</option>
+                            <option value="active">Active</option>
+                            <option value="attended">Attended</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-download"></i> Export Registrations (CSV)
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Workshop Data</h5>
+            </div>
+            <div class="card-body">
+                <p>Export workshop details including facilitators and associated events.</p>
+                <form action="/reports/workshops/export" method="GET">
+                    <div class="mb-3">
+                        <label for="workshopEventId" class="form-label">Associated Event (Optional)</label>
+                        <select class="form-select" id="workshopEventId" name="eventId">
+                            <option value="">All Events</option>
+                            <% if (locals.events && events.length > 0) { %>
+                                <% events.forEach(event => { %>
+                                    <option value="<%= event.id %>"><%= event.name %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="workshopPublished" class="form-label">Publication Status (Optional)</label>
+                        <select class="form-select" id="workshopPublished" name="published">
+                            <option value="">All Statuses</option>
+                            <option value="true">Published Only</option>
+                            <option value="false">Drafts Only</option>
+                        </select>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-download"></i> Export Workshops (CSV)
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

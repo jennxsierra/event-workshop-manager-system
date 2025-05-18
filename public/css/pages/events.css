@@ -1,0 +1,49 @@
+.event-filter-panel {
+  padding: 1.5rem;
+  background-color: var(--gray-light);
+  border-radius: var(--border-radius);
+  margin-bottom: 1.5rem;
+}
+
+.event-card {
+  height: 100%;
+}
+
+.event-card .badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.event-details-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.event-meta-item {
+  display: flex;
+  align-items: center;
+}
+
+.event-meta-item i {
+  margin-right: 0.5rem;
+  color: var(--primary);
+}
+
+.registration-section {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-light);
+}
+
+.attendee-list {
+  margin-top: 2rem;
+}

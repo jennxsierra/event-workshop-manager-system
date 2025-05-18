@@ -1,0 +1,92 @@
+<div class="mb-3">
+    <a href="/workshops" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Back to Workshops</a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-light">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><%= workshop.title %></h3>
+            <% if(workshop.isPublished) { %>
+                <span class="badge bg-success">Published</span>
+            <% } else { %>
+                <span class="badge bg-secondary">Draft</span>
+            <% } %>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <p class="mb-2">
+                    <strong><i class="bi bi-person-badge"></i> Facilitator:</strong> 
+                    <%= workshop.facilitator %>
+                </p>
+                <p class="mb-2">
+                    <strong><i class="bi bi-clock"></i> Duration:</strong> 
+                    <%= workshop.duration %> minutes
+                </p>
+                <% if(workshop.event) { %>
+                    <p class="mb-2">
+                        <strong><i class="bi bi-calendar-event"></i> Associated Event:</strong> 
+                        <a href="/events/<%= workshop.event.id %>"><%= workshop.event.name %></a>
+                        (<%= formatDate(workshop.event.date) %>)
+                    </p>
+                <% } %>
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <h5>Description</h5>
+            <div class="p-3 bg-light rounded">
+                <%= workshop.description %>
+            </div>
+        </div>
+        
+        <% if(workshop.materials) { %>
+            <div class="mb-4">
+                <h5>Required Materials</h5>
+                <div class="p-3 bg-light rounded">
+                    <%= workshop.materials %>
+                </div>
+            </div>
+        <% } %>
+        
+        <% if(locals.workshopFiles && workshopFiles.length > 0) { %>
+            <div class="mb-4">
+                <h5>Workshop Materials</h5>
+                <ul class="list-group">
+                    <% workshopFiles.forEach(file => { %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-file-earmark"></i> <%= file.fileName %>
+                            </div>
+                            <a href="/workshops/materials/<%= file.id %>" class="btn btn-sm btn-outline-primary">
+                                Download
+                            </a>
+                        </li>
+                    <% }) %>
+                </ul>
+            </div>
+        <% } %>
+        
+        <% if(locals.user && (locals.user.role === 'STAFF' || locals.user.role === 'ADMIN')) { %>
+            <div class="d-flex mb-4">
+                <a href="/workshops/<%= workshop.id %>/edit" class="btn btn-primary me-2">Edit Workshop</a>
+                
+                <% if(locals.user.role === 'ADMIN') { %>
+                    <form action="/workshops/<%= workshop.id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure you want to delete this workshop?');">
+                        <button type="submit" class="btn btn-danger">Delete Workshop</button>
+                    </form>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<% function formatDate(date) {
+    return new Date(date).toLocaleDateString('en-US', { 
+        weekday: 'short',
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric'
+    });
+} %>

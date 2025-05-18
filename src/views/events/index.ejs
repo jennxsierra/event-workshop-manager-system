@@ -1,0 +1,106 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Events</h1>
+    <% if (locals.user && (locals.user.role === 'STAFF' || locals.user.role === 'ADMIN')) { %>
+        <a href="/events/new" class="btn btn-primary">Create New Event</a>
+    <% } %>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Filter Events</h5>
+            </div>
+            <div class="card-body">
+                <form action="/events" method="GET">
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category">
+                            <option value="">All Categories</option>
+                            <option value="WORKSHOP">Workshop</option>
+                            <option value="TRAINING">Training</option>
+                            <option value="PUBLIC_OUTREACH">Public Outreach</option>
+                            <option value="PRESS">Press</option>
+                            <option value="LAUNCH">Launch</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="date" name="date">
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-9">
+        <% if (locals.events && events.length > 0) { %>
+            <div class="row">
+                <% events.forEach(event => { %>
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <span class="badge bg-<%= getBadgeClass(event.category) %> float-end"><%= event.category %></span>
+                                <h5 class="card-title"><%= event.name %></h5>
+                                <p class="card-text text-muted mb-2">
+                                    <i class="bi bi-calendar"></i> <%= formatDate(event.date) %>
+                                </p>
+                                <p class="card-text text-muted mb-2">
+                                    <i class="bi bi-clock"></i> <%= formatTime(event.time) %> 
+                                    <% if (event.endTime) { %>
+                                        - <%= formatTime(event.endTime) %>
+                                    <% } %>
+                                </p>
+                                <p class="card-text text-muted mb-3">
+                                    <i class="bi bi-geo-alt"></i> <%= event.location %>
+                                </p>
+                                <p class="card-text">
+                                    Available Spots: <%= event.capacity - (event.registrations?.length || 0) %>/<%= event.capacity %>
+                                </p>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <a href="/events/<%= event.id %>" class="btn btn-sm btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="alert alert-info">
+                No events found. Please check back later.
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<% function getBadgeClass(category) {
+    switch(category) {
+        case 'WORKSHOP': return 'info';
+        case 'TRAINING': return 'primary';
+        case 'PUBLIC_OUTREACH': return 'success';
+        case 'PRESS': return 'warning';
+        case 'LAUNCH': return 'danger';
+        default: return 'secondary';
+    }
+} %>
+
+<% function formatDate(date) {
+    return new Date(date).toLocaleDateString('en-US', { 
+        weekday: 'short',
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric'
+    });
+} %>
+
+<% function formatTime(time) {
+    return new Date(time).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+} %>

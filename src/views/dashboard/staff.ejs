@@ -1,0 +1,207 @@
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Staff Dashboard</h5>
+            </div>
+            <div class="card-body">
+                <p>Welcome to your staff dashboard. Here you can manage events, workshops, and monitor upcoming activities.</p>
+                
+                <div class="mt-4">
+                    <h6>Quick Actions</h6>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="d-grid">
+                                <a href="/events/new" class="btn btn-outline-primary">
+                                    <i class="bi bi-calendar-plus"></i> Create Event
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-grid">
+                                <a href="/workshops/create" class="btn btn-outline-primary">
+                                    <i class="bi bi-journal-plus"></i> Create Workshop
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-grid">
+                                <a href="/registrations/manage" class="btn btn-outline-primary">
+                                    <i class="bi bi-person-check"></i> Manage Registrations
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Upcoming Events</h5>
+                            <a href="/events" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <% if (locals.upcomingEvents && upcomingEvents.length > 0) { %>
+                            <div class="list-group">
+                                <% upcomingEvents.slice(0, 5).forEach(event => { %>
+                                    <a href="/events/<%= event.id %>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1"><%= event.name %></h6>
+                                            <small class="text-muted">
+                                                <i class="bi bi-calendar"></i> <%= formatDate(event.date) %>
+                                            </small>
+                                        </div>
+                                        <span class="badge bg-<%= getBadgeClass(event.category) %>"><%= event.category %></span>
+                                    </a>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="alert alert-info mb-0">
+                                No upcoming events. <a href="/events/new">Create one</a>!
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Recent Registrations</h5>
+                            <a href="/registrations/manage" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <% if (locals.recentRegistrations && recentRegistrations.length > 0) { %>
+                            <div class="list-group">
+                                <% recentRegistrations.slice(0, 5).forEach(reg => { %>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <% if(reg.participant) { %>
+                                                    <h6 class="mb-1"><%= reg.participant.firstName %> <%= reg.participant.lastName %></h6>
+                                                <% } else { %>
+                                                    <h6 class="mb-1">Deleted User</h6>
+                                                <% } %>
+                                                <small class="text-muted">Registered for <%= reg.event.name %></small>
+                                            </div>
+                                            <small class="text-muted"><%= formatDateTime(reg.registeredAt) %></small>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="alert alert-info mb-0">
+                                No recent registrations.
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Event Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Upcoming Events:</span>
+                    <strong><%= locals.eventStats?.upcoming || 0 %></strong>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span>This Month:</span>
+                    <strong><%= locals.eventStats?.thisMonth || 0 %></strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Total Registrations:</span>
+                    <strong><%= locals.eventStats?.registrations || 0 %></strong>
+                </div>
+                <hr>
+                <div class="d-grid">
+                    <a href="/events" class="btn btn-outline-primary">Manage Events</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Tasks</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <% if(locals.pendingTasks && pendingTasks.length > 0) { %>
+                        <% pendingTasks.forEach(task => { %>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <%= task.description %>
+                                <span class="badge bg-<%= task.priority === 'high' ? 'danger' : 'warning' %> rounded-pill">
+                                    <%= task.priority %>
+                                </span>
+                            </li>
+                        <% }) %>
+                    <% } else { %>
+                        <li class="list-group-item">
+                            <% if(locals.eventStats?.upcoming && locals.eventStats.upcoming > 0) { %>
+                                Prepare for <%= locals.eventStats.upcoming %> upcoming events
+                            <% } else { %>
+                                No urgent tasks
+                            <% } %>
+                        </li>
+                        <li class="list-group-item">Review workshop materials</li>
+                        <li class="list-group-item">Check registration requests</li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Need Help?</h5>
+            </div>
+            <div class="card-body">
+                <p>If you need assistance with the staff dashboard or have questions about your role, please contact the system administrator.</p>
+                <div class="d-grid">
+                    <a href="/support" class="btn btn-outline-secondary">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% function formatDate(date) {
+    return new Date(date).toLocaleDateString('en-US', { 
+        weekday: 'short',
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric'
+    });
+} %>
+
+<% function formatDateTime(dateTime) {
+    return new Date(dateTime).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+} %>
+
+<% function getBadgeClass(category) {
+    switch(category) {
+        case 'WORKSHOP': return 'info';
+        case 'TRAINING': return 'primary';
+        case 'PUBLIC_OUTREACH': return 'success';
+        case 'PRESS': return 'warning';
+        case 'LAUNCH': return 'danger';
+        default: return 'secondary';
+    }
+} %>

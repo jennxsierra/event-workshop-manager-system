@@ -1,0 +1,92 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Edit Event</h1>
+    <a href="/events/<%= event.id %>" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back to Event</a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Event Details</h5>
+    </div>
+    <div class="card-body">
+        <form action="/events/<%= event.id %>?_method=PUT" method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label">Event Name</label>
+                <input type="text" class="form-control" id="name" name="name" 
+                       value="<%= event.name %>" required>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="category" class="form-label">Category</label>
+                    <select class="form-select" id="category" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="WORKSHOP" <%= event.category === 'WORKSHOP' ? 'selected' : '' %>>Workshop</option>
+                        <option value="TRAINING" <%= event.category === 'TRAINING' ? 'selected' : '' %>>Training</option>
+                        <option value="PUBLIC_OUTREACH" <%= event.category === 'PUBLIC_OUTREACH' ? 'selected' : '' %>>Public Outreach</option>
+                        <option value="PRESS" <%= event.category === 'PRESS' ? 'selected' : '' %>>Press</option>
+                        <option value="LAUNCH" <%= event.category === 'LAUNCH' ? 'selected' : '' %>>Launch</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="capacity" class="form-label">Capacity</label>
+                    <input type="number" class="form-control" id="capacity" name="capacity" 
+                           value="<%= event.capacity %>" required min="1">
+                    <div class="form-text">
+                        Current registrations: <%= registrationsCount || 0 %>
+                        <% if(registrationsCount > 0) { %>
+                            (Reducing capacity below this number will prevent new registrations but won't affect existing ones)
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="location" class="form-label">Location</label>
+                <input type="text" class="form-control" id="location" name="location" 
+                       value="<%= event.location %>" required>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="date" class="form-label">Date</label>
+                    <input type="date" class="form-control" id="date" name="date" 
+                           value="<%= formatDateValue(event.date) %>" required>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="time" class="form-label">Start Time</label>
+                    <input type="time" class="form-control" id="time" name="time" 
+                           value="<%= formatTimeValue(event.time) %>" required>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="endTime" class="form-label">End Time (optional)</label>
+                    <input type="time" class="form-control" id="endTime" name="endTime" 
+                           value="<%= event.endTime ? formatTimeValue(event.endTime) : '' %>">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" 
+                          rows="5" required><%= event.description %></textarea>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="/events/<%= event.id %>" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Update Event</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<% function formatDateValue(date) {
+    const d = new Date(date);
+    return d.toISOString().split('T')[0];
+} %>
+
+<% function formatTimeValue(time) {
+    const t = new Date(time);
+    return t.toTimeString().slice(0, 5);
+} %>

@@ -4,6 +4,7 @@ import { sessionMiddleware } from "./sessionConfig.js";
 import logger from "../middleware/logger.js";
 import { methodOverrideMiddleware } from "../middleware/methodOverride.js";
 import { authenticate } from "../middleware/auth.js";
+import expressLayouts from "express-ejs-layouts";
 
 export const configureExpress = (app: Express): void => {
   // Apply session middleware
@@ -25,6 +26,12 @@ export const configureExpress = (app: Express): void => {
   // Set EJS as the templating engine and set the views directory
   app.set("view engine", "ejs");
   app.set("views", path.join(process.cwd(), "src/views"));
+
+  // Add express-ejs-layouts middleware
+  app.use(expressLayouts);
+  app.set("layout", "layouts/main");
+  app.set("layout extractScripts", true);
+  app.set("layout extractStyles", true);
 
   // Authentication middleware
   app.use(authenticate);

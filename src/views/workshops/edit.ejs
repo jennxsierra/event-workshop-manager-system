@@ -1,0 +1,113 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Edit Workshop</h1>
+    <a href="/workshops/<%= workshop.id %>" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back to Workshop</a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Workshop Details</h5>
+    </div>
+    <div class="card-body">
+        <form action="/workshops/<%= workshop.id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="title" class="form-label">Workshop Title</label>
+                    <input type="text" class="form-control" id="title" name="title" 
+                           value="<%= workshop.title %>" required>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="eventId" class="form-label">Associated Event</label>
+                    <select class="form-select" id="eventId" name="eventId" required>
+                        <option value="">Select an event</option>
+                        <% if (locals.events && events.length > 0) { %>
+                            <% events.forEach(event => { %>
+                                <option value="<%= event.id %>" 
+                                    <%= workshop.eventId == event.id ? 'selected' : '' %>>
+                                    <%= event.name %> (<%= formatDate(event.date) %>)
+                                </option>
+                            <% }); %>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" 
+                          rows="4" required><%= workshop.description %></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="facilitator" class="form-label">Facilitator</label>
+                    <input type="text" class="form-control" id="facilitator" name="facilitator" 
+                           value="<%= workshop.facilitator %>" required>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="duration" class="form-label">Duration (minutes)</label>
+                    <input type="number" class="form-control" id="duration" name="duration" 
+                           value="<%= workshop.duration %>" required min="15" step="15">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="materials" class="form-label">Required Materials</label>
+                <textarea class="form-control" id="materials" name="materials" 
+                          rows="3"><%= workshop.materials || '' %></textarea>
+                <div class="form-text">List any materials that participants should bring or will be provided.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="workshopFiles" class="form-label">Workshop Materials (PDF, PPT, etc.)</label>
+                <input type="file" class="form-control" id="workshopFiles" name="workshopFiles" multiple>
+                <div class="form-text">You can upload multiple files (max 10MB each). New files will be added to existing ones.</div>
+            </div>
+            
+            <% if(locals.workshopFiles && workshopFiles.length > 0) { %>
+                <div class="mb-3">
+                    <label class="form-label">Current Files</label>
+                    <div class="list-group">
+                        <% workshopFiles.forEach(file => { %>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div><%= file.fileName %></div>
+                                <div class="d-flex">
+                                    <a href="/workshops/materials/<%= file.id %>" class="btn btn-sm btn-outline-primary me-2">
+                                        Download
+                                    </a>
+                                    <form action="/workshops/materials/<%= file.id %>?_method=DELETE" method="POST">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                    </form>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            <% } %>
+            
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="isPublished" name="isPublished" 
+                           <%= workshop.isPublished ? 'checked' : '' %>>
+                    <label class="form-check-label" for="isPublished">
+                        Publish workshop (visible to participants)
+                    </label>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="/workshops/<%= workshop.id %>" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Update Workshop</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<% function formatDate(date) {
+    return new Date(date).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric'
+    });
+} %>

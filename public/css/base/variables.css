@@ -1,0 +1,40 @@
+:root {
+  /* Color palette based on SIB logo */
+  --primary: #971b1e; /* Deep red/burgundy from logo */
+  --secondary: #daa520; /* Gold/amber from logo */
+  --dark: #1a1a1a; /* Near black */
+  --light: #f8f9fa; /* Light background */
+  --gray: #6c757d; /* Medium gray */
+  --gray-light: #e9ecef; /* Light gray */
+  --gray-dark: #343a40; /* Dark gray */
+
+  /* Contextual colors */
+  --success: #28a745; /* Green */
+  --info: #17a2b8; /* Blue */
+  --warning: #ffc107; /* Yellow/Amber */
+  --danger: #dc3545; /* Red */
+
+  /* Typography */
+  --font-family-base: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-headings: "Montserrat", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 3rem;
+
+  /* Border radius */
+  --border-radius: 0.25rem;
+  --border-radius-lg: 0.5rem;
+
+  /* Box shadow */
+  --box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+
+  /* Transition */
+  --transition: all 0.3s ease;
+}

@@ -1,0 +1,23 @@
+.auth-card {
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.auth-card .card-header {
+  background-color: var(--primary);
+  color: white;
+}
+
+.auth-form-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-light);
+  text-align: center;
+}
+
+.social-login-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}

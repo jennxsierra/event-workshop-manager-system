@@ -76,7 +76,7 @@ export class UserController extends BaseController {
           : [];
 
       this.render(res, "users/profile", {
-        profile: userData,
+        user: userData,
         registrations,
         isOwnProfile: req.user?.id === userId,
       });
