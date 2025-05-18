@@ -4,7 +4,13 @@ import { authorize } from "../middleware/auth.js";
 import { Role } from "../models/user/Role.js";
 
 export class EventRouter extends BaseRouter {
-  private controller = new EventController();
+  private controller: EventController;
+
+  constructor() {
+    super();
+    this.controller = new EventController();
+    this.initializeRoutes();
+  }
 
   protected initializeRoutes(): void {
     // Public routes

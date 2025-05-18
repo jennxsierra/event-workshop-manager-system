@@ -6,6 +6,11 @@ import { Role } from "../models/user/Role.js";
 export class RegistrationRouter extends BaseRouter {
   private controller = new RegistrationController();
 
+  constructor() {
+    super();
+    this.initializeRoutes();
+  }
+
   protected initializeRoutes(): void {
     // User routes (register/cancel)
     this.router.post(

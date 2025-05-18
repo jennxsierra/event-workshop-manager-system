@@ -4,6 +4,11 @@ import { AuthController } from "../controllers/AuthController.js";
 export class AuthRouter extends BaseRouter {
   private controller = new AuthController();
 
+  constructor() {
+    super();
+    this.initializeRoutes();
+  }
+
   protected initializeRoutes(): void {
     // Login
     this.router.get(

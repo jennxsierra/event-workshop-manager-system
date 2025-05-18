@@ -6,6 +6,11 @@ import { Role } from "../models/user/Role.js";
 export class UserRouter extends BaseRouter {
   private controller = new UserController();
 
+  constructor() {
+    super();
+    this.initializeRoutes();
+  }
+
   protected initializeRoutes(): void {
     // Get user profile (requires authentication)
     this.router.get(

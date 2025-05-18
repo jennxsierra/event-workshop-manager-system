@@ -6,6 +6,11 @@ import { Role } from "../models/user/Role.js";
 export class ReportRouter extends BaseRouter {
   private controller = new ReportController();
 
+  constructor() {
+    super();
+    this.initializeRoutes();
+  }
+
   protected initializeRoutes(): void {
     // All report routes are admin only
     this.router.get(

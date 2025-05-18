@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 // Setup shutdown handlers
 function setupShutdownHandlers(server: Server) {
   const shutdown = async () => {
-    console.log("Disconnecting from database...");
+    console.log("\nDisconnecting from database...");
     await prisma.$disconnect();
 
     server.close(() => {
