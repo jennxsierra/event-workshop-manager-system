@@ -18,14 +18,22 @@ export class UserRouter extends BaseRouter {
       this.controller.getUserProfile.bind(this.controller)
     );
 
+    // Update user profile - handle both cases
+    this.router.post(
+      "/profile",
+      this.controller.updateProfile.bind(this.controller)
+    );
+
+    // Keep the PUT route for backwards compatibility
+    this.router.put(
+      "/:id",
+      this.controller.updateProfile.bind(this.controller)
+    );
+
     // Edit user profile
     this.router.get(
       "/edit/:id?",
       this.controller.showEditProfileForm.bind(this.controller)
-    );
-    this.router.put(
-      "/:id",
-      this.controller.updateProfile.bind(this.controller)
     );
 
     // Admin only routes

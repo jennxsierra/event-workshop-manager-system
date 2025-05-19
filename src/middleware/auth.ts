@@ -8,7 +8,7 @@ export const authenticate = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    // Skip authentication for public routes
+    // Skip authentication check for public routes
     const publicRoutes = [
       "/",
       "/auth/login",
@@ -19,14 +19,6 @@ export const authenticate = async (
       /^\/css\/.*/,
       /^\/js\/.*/,
     ];
-
-    // Check if this is a public route
-    const isPublicRoute = publicRoutes.some((route) => {
-      if (typeof route === "string") {
-        return req.path === route;
-      }
-      return route.test(req.path);
-    });
 
     // Check if user is logged in via session
     if (req.session.userId) {
@@ -53,14 +45,26 @@ export const authenticate = async (
       }
     }
 
+    // Check if this is a public route
+    const isPublicRoute = publicRoutes.some((route) => {
+      if (typeof route === "string") {
+        return req.path === route;
+      }
+      return route.test(req.path);
+    });
+
     // If this is not a public route and user is not authenticated, redirect to login
     if (!isPublicRoute && !req.user) {
       if (req.headers.accept?.includes("application/json")) {
         res.status(401).json({ error: "Authentication required" });
-        return; // Add this to fix the return type issue
+        return;
       }
       res.redirect("/auth/login");
-      return; // Add this to fix the return type issue
+      return;
+    }
+    
+    if (req.user) {
+      res.locals.user = req.user;
     }
 
     next();

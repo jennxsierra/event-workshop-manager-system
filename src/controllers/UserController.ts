@@ -121,7 +121,15 @@ export class UserController extends BaseController {
   // Update user profile
   async updateProfile(req: Request, res: Response): Promise<void> {
     await this.handleAsync(req, res, async () => {
-      const userId = req.params.id ? BigInt(req.params.id) : req.user?.id;
+      let userId = req.user?.id;
+
+      if (req.params.id && req.params.id !== "profile") {
+        try {
+          userId = BigInt(req.params.id);
+        } catch {
+          userId = req.user?.id;
+        }
+      }
 
       if (!userId) {
         return this.redirectWithMessage(
@@ -218,7 +226,7 @@ export class UserController extends BaseController {
 
         this.redirectWithMessage(
           res,
-          `/users/profile/${userId}`,
+          `/users/profile`,
           "Profile updated successfully"
         );
       } catch (error) {
