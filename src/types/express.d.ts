@@ -21,6 +21,24 @@ declare global {
 declare module "express-session" {
   interface SessionData {
     userId: string;
+    // Add messages property for flash messages
+    messages?: {
+      success?: string;
+      error?: string;
+      warning?: string;
+      info?: string;
+    };
+    // Add user property to store user information
+    user?: {
+      id: bigint;
+      username: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      role: Role;
+      phone?: string;
+      organization?: string;
+    };
   }
 }
 

@@ -1,14 +1,18 @@
-import express, { Express } from "express";
 import path from "path";
-import { sessionMiddleware } from "./sessionConfig.js";
+import express, { Express } from "express";
 import logger from "../middleware/logger.js";
-import { methodOverrideMiddleware } from "../middleware/methodOverride.js";
-import { authenticate } from "../middleware/auth.js";
 import expressLayouts from "express-ejs-layouts";
+import { authenticate } from "../middleware/auth.js";
+import { flashMiddleware } from "../middleware/flash.js";
+import { sessionMiddleware } from "./sessionConfig.js";
+import { methodOverrideMiddleware } from "../middleware/methodOverride.js";
 
 export const configureExpress = (app: Express): void => {
   // Apply session middleware
   app.use(sessionMiddleware);
+
+  // Apply flash middleware for flash messages
+  app.use(flashMiddleware);
 
   // Use the logger middleware
   app.use(logger);

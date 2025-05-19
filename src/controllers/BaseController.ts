@@ -9,8 +9,9 @@ export abstract class BaseController {
   }
 
   protected render(res: Response, view: string, data = {}, status = 200): void {
-    res.status(status).render(view, { ...data });
-  }
+  const userData = res.req.user ? { user: res.req.user } : {};
+  res.status(status).render(view, { ...userData, ...data });
+}
 
   protected error(res: Response, message: string, status = 500): Response {
     return res.status(status).json({
@@ -30,10 +31,27 @@ export abstract class BaseController {
     type = "success"
   ): void {
     // Store flash message in session
-    if (!res.locals.messages) {
-      res.locals.messages = {};
+    if (res.req.session) {
+      // Store in session flash
+      if (!res.req.session.messages) {
+        res.req.session.messages = {};
+      }
+      if (
+        type === "success" ||
+        type === "error" ||
+        type === "warning" ||
+        type === "info"
+      ) {
+        res.req.session.messages[type] = message;
+      } else {
+        // Default to success if unknown type
+        res.req.session.messages.success = message;
+      }
     }
-    res.locals.messages[type] = message;
+
+    // Debug log
+    console.log(`Setting message: ${message} of type ${type}`);
+
     res.redirect(url);
   }
 
