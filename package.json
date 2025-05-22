@@ -10,7 +10,8 @@
     "start": "node dist/main.js",
     "type-check": "tsc --noEmit",
     "start-server": "nodemon --watch src --exec tsx src/main.ts",
-    "dev": "npm-run-all --parallel type-check start-server"
+    "dev": "npm-run-all --parallel type-check start-server",
+    "db:seed": "tsx prisma/seed.ts"
   },
   "repository": {
     "type": "git",
