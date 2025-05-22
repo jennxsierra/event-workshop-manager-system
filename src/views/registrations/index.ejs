@@ -24,74 +24,105 @@
 </ul>
 
 <% if (registrations.length > 0) { %>
-    <div class="row">
-        <% registrations.forEach(registration => { %>
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><%= registration.event.name %></h5>
-                        <span class="badge bg-<%= getBadgeClass(registration.event.category) %>">
-                            <%= registration.event.category %>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text text-muted mb-2">
-                            <i class="bi bi-calendar"></i> <%= formatDate(registration.event.date) %>
-                        </p>
-                        <p class="card-text text-muted mb-2">
-                            <i class="bi bi-clock"></i> <%= formatTime(registration.event.time) %> 
-                            <% if (registration.event.endTime) { %>
-                                - <%= formatTime(registration.event.endTime) %>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Event</th>
+                    <th>Participant</th>
+                    <th>Registration Date</th>
+                    <th>Registration Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% registrations.forEach(registration => { %>
+                    <tr>
+                        <td>
+                            <span class="badge bg-<%= getBadgeClass(registration.event.category) %>">
+                                <%= registration.event.category %>
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/events/<%= registration.eventId %>" class="text-decoration-none">
+                                <%= registration.event.name %>
+                            </a>
+                        </td>
+                        <td>
+                            <% if (registration.participant) { %>
+                                <a href="/users/<%= registration.participantId %>" class="text-decoration-none">
+                                    <%= registration.participant.firstName %> <%= registration.participant.lastName %>
+                                </a>
+                            <% } else { %>
+                                <em>Deleted User</em>
                             <% } %>
-                        </p>
-                        <p class="card-text text-muted mb-3">
-                            <i class="bi bi-geo-alt"></i> <%= registration.event.location %>
-                        </p>
-                        
-                        <% if (registration.cancelled) { %>
-                            <div class="alert alert-danger mb-0">
-                                <i class="bi bi-x-circle-fill"></i> Registration cancelled on 
-                                <%= formatDateTime(registration.cancelledAt) %>
-                            </div>
-                        <% } else if (registration.attended) { %>
-                            <div class="alert alert-success mb-0">
-                                <i class="bi bi-check-circle-fill"></i> Attendance recorded
-                            </div>
-                        <% } else { %>
-                            <p>
-                                <strong>Registration Date:</strong> <%= formatDateTime(registration.registeredAt) %>
-                            </p>
-                        <% } %>
-                    </div>
-                    <div class="card-footer bg-white">
-                        <a href="/events/<%= registration.event.id %>" class="btn btn-sm btn-primary">
-                            View Event Details
-                        </a>
-                        
-                        <% if (!registration.cancelled && new Date(registration.event.date) > new Date()) { %>
-                            <form action="/registrations/events/<%= registration.event.id %>/cancel" 
-                                  method="POST" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-outline-danger confirm-action" 
-                                        data-confirm="Are you sure you want to cancel this registration?">
-                                    Cancel Registration
-                                </button>
-                            </form>
-                        <% } %>
-                    </div>
-                </div>
-            </div>
-        <% }); %>
+                        </td>
+                        <td>
+                            <%= new Date(registration.registeredAt).toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric' 
+                            }) %>
+                        </td>
+                        <td>
+                            <%= new Date(registration.registeredAt).toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }) %>
+                        </td>
+                        <td>
+                            <% if (registration.cancelled) { %>
+                                <span class="badge bg-danger">Cancelled</span>
+                                <% if (registration.cancelledAt) { %>
+                                    <small class="d-block text-muted">
+                                        on <%= new Date(registration.cancelledAt).toLocaleDateString('en-US', { 
+                                            month: 'short', 
+                                            day: 'numeric' 
+                                        }) %>
+                                    </small>
+                                <% } %>
+                            <% } else { %>
+                                <span class="badge bg-success">Active</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if (!registration.cancelled && new Date(registration.event.eventDate) > new Date()) { %>
+                                <div class="d-flex gap-2">
+                                    <a href="/events/<%= registration.eventId %>" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                    <form action="/events/<%= registration.eventId %>/cancel" method="POST">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger confirm-action" 
+                                                data-confirm="Are you sure you want to cancel this registration?">
+                                            <i class="bi bi-x-circle"></i> Cancel
+                                        </button>
+                                    </form>
+                                </div>
+                            <% } else { %>
+                                <a href="/events/<%= registration.eventId %>" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
     </div>
 <% } else { %>
     <div class="alert alert-info">
         <% if (tab === 'upcoming') { %>
-            You have no upcoming event registrations.
+            <p>No upcoming event registrations found.</p>
         <% } else if (tab === 'past') { %>
-            You have no past event registrations.
+            <p>No past event registrations found.</p>
         <% } else if (tab === 'cancelled') { %>
-            You have no cancelled registrations.
+            <p>No cancelled registrations found.</p>
+        <% } else { %>
+            <p>No registrations found for this category.</p>
         <% } %>
-        <a href="/events" class="alert-link">Browse events</a> to register.
+        <a href="/events" class="alert-link">Browse events</a> to see available events.
     </div>
 <% } %>
 
@@ -104,30 +135,4 @@
         case 'LAUNCH': return 'danger';
         default: return 'secondary';
     }
-} %>
-
-<% function formatDate(date) {
-    return new Date(date).toLocaleDateString('en-US', { 
-        weekday: 'short',
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric'
-    });
-} %>
-
-<% function formatTime(time) {
-    return new Date(time).toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-} %>
-
-<% function formatDateTime(dateTime) {
-    return new Date(dateTime).toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
 } %>

@@ -51,6 +51,19 @@
             </div>
         </div>
         
+        <% 
+            // Check if event has already passed
+            const eventDate = new Date(event.date);
+            const currentDate = new Date();
+            const eventPassed = eventDate < currentDate;
+        %>
+        
+        <% if (eventPassed) { %>
+            <div class="alert alert-secondary mb-4">
+                <i class="bi bi-calendar-x"></i> This event has already passed.
+            </div>
+        <% } %>
+        
         <% if(locals.user) { %>
             <% 
                 const isRegistered = registrations.some(reg => 
@@ -58,7 +71,7 @@
                 );
             %>
             
-            <% if(!isRegistered && (event.capacity - registrations.length) > 0) { %>
+            <% if(!isRegistered && (event.capacity - registrations.length) > 0 && !eventPassed) { %>
                 <form action="/registrations/events/<%= event.id %>/register" method="POST" class="mb-4">
                     <button type="submit" class="btn btn-success" data-event-id="<%= event.id %>">Register for this Event</button>
                 </form>
@@ -66,14 +79,16 @@
                 <div class="alert alert-success mb-4">
                     You are registered for this event!
                     
-                    <form action="/registrations/events/<%= event.id %>/cancel" method="POST" class="d-inline ms-3">
-                        <button type="submit" class="btn btn-sm btn-danger" data-event-id="<%= event.id %>">Cancel Registration</button>
-                    </form>
+                    <% if (!eventPassed) { %>
+                        <form action="/registrations/events/<%= event.id %>/cancel" method="POST" class="d-inline ms-3">
+                            <button type="submit" class="btn btn-sm btn-danger" data-event-id="<%= event.id %>">Cancel Registration</button>
+                        </form>
+                    <% } %>
                 </div>
-            <% } else { %>
+            <% } else if (!eventPassed) { %>
                 <div class="alert alert-warning mb-4">This event is at full capacity</div>
             <% } %>
-        <% } else { %>
+        <% } else if (!eventPassed) { %>
             <div class="alert alert-info mb-4">
                 Please <a href="/auth/login">login</a> to register for this event.
             </div>

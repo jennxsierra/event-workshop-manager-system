@@ -64,6 +64,18 @@ export class RegistrationController extends BaseController {
           "error"
         );
       }
+      
+      // Check if event has already passed
+      const eventDate = new Date(eventData.eventDate);
+      const currentDate = new Date();
+      if (eventDate < currentDate) {
+        return this.redirectWithMessage(
+          res,
+          `/events/${eventId}`,
+          "Sorry, registration is not available for past events",
+          "error"
+        );
+      }
 
       // Create event and participant objects
       const event = new Event(
@@ -88,19 +100,30 @@ export class RegistrationController extends BaseController {
       );
 
       // Register for the event
-      const success = await participant.registerForEvent(event);
-
-      if (success) {
+      try {
+        const success = await participant.registerForEvent(event);
+        
+        if (success) {
+          this.redirectWithMessage(
+            res,
+            `/events/${eventId}`,
+            "Registration successful"
+          );
+        } else {
+          this.redirectWithMessage(
+            res,
+            `/events/${eventId}`,
+            "Failed to register for this event",
+            "error"
+          );
+        }
+      } catch (error) {
+        // Handle specific error from the Participant model
+        const errorMessage = error instanceof Error ? error.message : "Failed to register for this event";
         this.redirectWithMessage(
           res,
           `/events/${eventId}`,
-          "Registration successful"
-        );
-      } else {
-        this.redirectWithMessage(
-          res,
-          `/events/${eventId}`,
-          "Failed to register for this event",
+          errorMessage,
           "error"
         );
       }
@@ -199,7 +222,41 @@ export class RegistrationController extends BaseController {
         return this.renderError(res, "Unauthorized", 403);
       }
 
+      // Get the tab from query parameter, default to 'upcoming' if not provided
+      const tab = req.query.tab as string || 'upcoming';
+      
+      // Get current date for filtering
+      const now = new Date();
+      
+      // Prepare filter conditions based on tab
+      let whereCondition: any = {};
+      
+      if (tab === 'upcoming') {
+        whereCondition = {
+          event: {
+            eventDate: {
+              gte: now,
+            }
+          },
+          cancelled: false
+        };
+      } else if (tab === 'past') {
+        whereCondition = {
+          event: {
+            eventDate: {
+              lt: now,
+            }
+          },
+          cancelled: false
+        };
+      } else if (tab === 'cancelled') {
+        whereCondition = {
+          cancelled: true
+        };
+      }
+
       const registrations = await prisma.registration.findMany({
+        where: whereCondition,
         include: {
           event: true,
           participant: true,
@@ -210,6 +267,8 @@ export class RegistrationController extends BaseController {
       this.render(res, "registrations/index", {
         registrations,
         pageName: "registrations",
+        tab: tab,
+        currentDate: now
       });
     });
   }

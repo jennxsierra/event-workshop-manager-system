@@ -34,6 +34,13 @@ export class Participant extends User implements IParticipant {
           "User must be saved to database before registering for events"
         );
       }
+      
+      // Check if the event has already occurred
+      const eventDate = new Date(event.date);
+      const currentDate = new Date();
+      if (eventDate < currentDate) {
+        throw new Error("Cannot register for events that have already passed");
+      }
 
       // Check if there's an existing registration (cancelled or not)
       const existingRegistration = await prisma.registration.findUnique({
@@ -81,7 +88,10 @@ export class Participant extends User implements IParticipant {
       if (!this.id) {
         throw new Error("User must have an ID to cancel registration");
       }
-
+      
+      // Allow cancellation regardless of event date - users should be able to cancel
+      // even if the event has passed, but this could be policy dependent
+      
       await prisma.registration.updateMany({
         where: {
           participantId: this.id,
