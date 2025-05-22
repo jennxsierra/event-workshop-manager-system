@@ -11,7 +11,8 @@
     "type-check": "tsc --noEmit",
     "start-server": "nodemon --watch src --exec tsx src/main.ts",
     "dev": "npm-run-all --parallel type-check start-server",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:setup": "tsx scripts/setup-database.ts",
+    "db:seed": "tsx scripts/seed.ts"
   },
   "repository": {
     "type": "git",
