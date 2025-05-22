@@ -17,17 +17,17 @@
                         <label for="category" class="form-label">Category</label>
                         <select class="form-select" id="category" name="category">
                             <option value="">All Categories</option>
-                            <option value="WORKSHOP">Workshop</option>
-                            <option value="TRAINING">Training</option>
-                            <option value="PUBLIC_OUTREACH">Public Outreach</option>
-                            <option value="PRESS">Press</option>
-                            <option value="LAUNCH">Launch</option>
+                            <option value="WORKSHOP" <%= locals.selectedCategory === 'WORKSHOP' ? 'selected' : '' %>>Workshop</option>
+                            <option value="TRAINING" <%= locals.selectedCategory === 'TRAINING' ? 'selected' : '' %>>Training</option>
+                            <option value="PUBLIC_OUTREACH" <%= locals.selectedCategory === 'PUBLIC_OUTREACH' ? 'selected' : '' %>>Public Outreach</option>
+                            <option value="PRESS" <%= locals.selectedCategory === 'PRESS' ? 'selected' : '' %>>Press</option>
+                            <option value="LAUNCH" <%= locals.selectedCategory === 'LAUNCH' ? 'selected' : '' %>>Launch</option>
                         </select>
                     </div>
                     
                     <div class="mb-3">
                         <label for="date" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="date" name="date">
+                        <input type="date" class="form-control" id="date" name="date" value="<%= locals.selectedDate || '' %>">
                     </div>
                     
                     <div class="d-grid">
@@ -60,7 +60,9 @@
                                     <i class="bi bi-geo-alt"></i> <%= event.location %>
                                 </p>
                                 <p class="card-text">
-                                    Available Spots: <%= event.capacity - (event.registrations?.length || 0) %>/<%= event.capacity %>
+                                    <% const registrationCount = Array.isArray(event.registrations) ? event.registrations.filter(r => !r.cancelled).length : 0; %>
+                                    <% const availableSpots = event.capacity - registrationCount; %>
+                                    Available Spots: <%= availableSpots %>/<%= event.capacity %>
                                 </p>
                             </div>
                             <div class="card-footer bg-white">

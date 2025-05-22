@@ -29,6 +29,20 @@ const Utils = {
       );
     }
   },
+  
+  /**
+   * Initialize Bootstrap dropdowns
+   */
+  initDropdowns() {
+    const dropdownTriggerList = document.querySelectorAll(
+      '[data-bs-toggle="dropdown"]'
+    );
+    if (dropdownTriggerList.length > 0) {
+      Array.from(dropdownTriggerList).map(
+        (dropdownTriggerEl) => new bootstrap.Dropdown(dropdownTriggerEl)
+      );
+    }
+  },
 
   /**
    * Setup automatic dismissal of flash messages

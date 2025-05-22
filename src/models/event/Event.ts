@@ -49,4 +49,10 @@ export class Event implements IEvent {
       this.registrations.splice(index, 1);
     }
   }
+  
+  // Get the number of valid registrations
+  getRegistrationCount(): number {
+    if (!this.registrations) return 0;
+    return this.registrations.filter(r => !r.cancelled).length;
+  }
 }

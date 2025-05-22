@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initialize tooltips and popovers
     Utils.initTooltips();
     Utils.initPopovers();
+    Utils.initDropdowns(); // Initialize Bootstrap dropdowns
 
     // Setup flash message auto-dismissal
     Utils.setupFlashMessages(5000); // Dismiss after 5 seconds
@@ -46,26 +47,6 @@ function setupGlobalEventHandlers() {
       );
     });
   }
-
-  // Handle dropdown toggle behavior
-  const dropdownToggles = document.querySelectorAll(".dropdown-toggle");
-  dropdownToggles.forEach((toggle) => {
-    toggle.addEventListener("click", (e) => {
-      e.preventDefault();
-      const dropdown = toggle.nextElementSibling;
-      if (dropdown && dropdown.classList.contains("dropdown-menu")) {
-        dropdown.classList.toggle("show");
-      }
-    });
-  });
-
-  // Close dropdowns when clicking outside
-  document.addEventListener("click", (e) => {
-    if (!e.target.classList.contains("dropdown-toggle")) {
-      const dropdowns = document.querySelectorAll(".dropdown-menu.show");
-      dropdowns.forEach((dropdown) => dropdown.classList.remove("show"));
-    }
-  });
 }
 
 /**

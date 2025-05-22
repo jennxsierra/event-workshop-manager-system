@@ -59,10 +59,23 @@ export class EventController extends BaseController {
   // Get all events
   async getEvents(req: Request, res: Response): Promise<void> {
     await this.handleAsync(req, res, async () => {
-      const events = await this.eventManager.getEvents();
+      // Extract filter parameters
+      const { category, date } = req.query;
+      
+      // Apply filters if they exist
+      const filters = {
+        category: category as string,
+        date: date as string,
+      };
+      
+      const events = await this.eventManager.getEvents(filters);
+      
       this.render(res, "events/index", {
         events,
         pageName: "events",
+        // Pass filters back to the view for maintaining selected values
+        selectedCategory: category,
+        selectedDate: date,
       });
     });
   }

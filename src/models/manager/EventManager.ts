@@ -1,4 +1,5 @@
 import { Event } from "../event/Event.js";
+import { Registration } from "../event/Registration.js";
 import { User } from "../user/User.js";
 import { IEventManager } from "./IEventManager.js";
 import { Role } from "../user/Role.js";
@@ -88,15 +89,75 @@ export class EventManager implements IEventManager {
     }
   }
 
-  async getEvents(): Promise<Event[]> {
+  async getEvents(filters?: { category?: string; date?: string }): Promise<Event[]> {
     try {
+      // Prepare where conditions for filtering
+      const where: any = {};
+      
+      // Apply category filter if provided
+      if (filters?.category) {
+        where.category = filters.category;
+      }
+      
+      // Apply date filter if provided
+      if (filters?.date) {
+        // Handle different date formats
+        let filterDate;
+        
+        try {
+          console.log("Date filter received:", filters.date);
+          
+          // Try to parse the date - handle both ISO format and yyyy-mm-dd
+          if (filters.date.includes('-')) {
+            // Standard date format like "2025-07-06"
+            const parts = filters.date.split('-');
+            if (parts.length === 3) {
+              // Ensure we're using year-month-day format properly
+              filterDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            }
+          } else if (filters.date.includes('/')) {
+            // Handle date format mm/dd/yyyy
+            const parts = filters.date.split('/');
+            if (parts.length === 3) {
+              filterDate = new Date(`${parts[2]}-${parts[0]}-${parts[1]}`);
+            }
+          }
+          
+          // If date parsing failed, try fallback
+          if (!filterDate || isNaN(filterDate.getTime())) {
+            filterDate = new Date(filters.date);
+          }
+          
+          // Only add date filter if it's a valid date
+          if (!isNaN(filterDate.getTime())) {
+            console.log("Filtering by date:", filterDate);
+            
+            // Set the time to midnight to compare only the date part
+            filterDate.setHours(0, 0, 0, 0);
+            
+            // Get the next day for date range comparison
+            const nextDay = new Date(filterDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+            
+            where.eventDate = {
+              gte: filterDate,
+              lt: nextDay,
+            };
+          }
+        } catch (error) {
+          console.error("Error parsing date filter:", error);
+        }
+      }
+      
       const prismaEvents = await prisma.event.findMany({
+        where,
         orderBy: { eventDate: "asc" },
+        include: { registrations: { where: { cancelled: false } } }, // Include only active registrations
       });
 
       return prismaEvents.map(
-        (e) =>
-          new Event(
+        (e) => {
+          const event = new Event(
             e.name,
             e.eventDate,
             e.startTime,
@@ -105,7 +166,25 @@ export class EventManager implements IEventManager {
             e.capacity,
             e.id,
             e.endTime || undefined
-          )
+          );
+          
+          // Convert database registration objects to Registration instances
+          if (e.registrations && Array.isArray(e.registrations)) {
+            // Convert each DB registration to a proper Registration instance
+            e.registrations.forEach(dbReg => {
+              const registration = new Registration(dbReg.registeredAt, dbReg.id);
+              if (dbReg.cancelled) {
+                registration.cancel();
+                if (dbReg.cancelledAt) {
+                  registration.cancelledAt = dbReg.cancelledAt;
+                }
+              }
+              event.addRegistration(registration);
+            });
+          }
+          
+          return event;
+        }
       );
     } catch (error) {
       console.error("Failed to get events:", error);
