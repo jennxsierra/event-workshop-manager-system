@@ -30,7 +30,10 @@ export class UserController extends BaseController {
         },
       });
 
-      this.render(res, "users/index", { users });
+      this.render(res, "users/index", {
+        users,
+        pageName: "users",
+      });
     });
   }
 
@@ -79,6 +82,7 @@ export class UserController extends BaseController {
         user: userData,
         registrations,
         isOwnProfile: req.user?.id === userId,
+        pageName: "users",
       });
     });
   }
@@ -114,6 +118,7 @@ export class UserController extends BaseController {
         user: userData,
         isAdmin: req.user?.role === Role.ADMIN,
         roles: Object.values(Role),
+        pageName: "users",
       });
     });
   }

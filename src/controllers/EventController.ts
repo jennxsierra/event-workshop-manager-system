@@ -60,7 +60,10 @@ export class EventController extends BaseController {
   async getEvents(req: Request, res: Response): Promise<void> {
     await this.handleAsync(req, res, async () => {
       const events = await this.eventManager.getEvents();
-      this.render(res, "events/index", { events });
+      this.render(res, "events/index", {
+        events,
+        pageName: "events",
+      });
     });
   }
 
@@ -95,6 +98,7 @@ export class EventController extends BaseController {
           event.endTime || undefined
         ),
         registrations: event.registrations,
+        pageName: "events",
       });
     });
   }
@@ -103,6 +107,7 @@ export class EventController extends BaseController {
   showCreateEventForm(_req: Request, res: Response): void {
     this.render(res, "events/create", {
       categories: Object.values(EventCategory),
+      pageName: "events",
     });
   }
 
@@ -187,6 +192,7 @@ export class EventController extends BaseController {
           event.endTime || undefined
         ),
         categories: Object.values(EventCategory),
+        pageName: "events",
       });
     });
   }

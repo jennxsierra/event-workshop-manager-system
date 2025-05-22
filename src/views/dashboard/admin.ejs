@@ -214,53 +214,16 @@
                 <h5 class="mb-0">User Activity</h5>
             </div>
             <div class="card-body">
-                <canvas id="userActivityChart" height="200"></canvas>
+                <canvas id="userActivityChart" 
+                        height="200"
+                        data-chart="bar"
+                        data-chart-labels="<%= encodeURIComponent(JSON.stringify(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'])) %>"
+                        data-chart-values="<%= encodeURIComponent(JSON.stringify([30, 40, 35, 50, 45, 60])) %>">
+                </canvas>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Registration Chart
-    const registrationCtx = document.getElementById('registrationChart').getContext('2d');
-    new Chart(registrationCtx, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            datasets: [{
-                label: 'Registrations',
-                data: <%= JSON.stringify(locals.registrationData || [25, 30, 45, 60, 75, 80]) %>,
-                borderColor: '#0d6efd',
-                backgroundColor: 'rgba(13, 110, 253, 0.1)',
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-
-    // User Activity Chart
-    const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
-    new Chart(userActivityCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Admin', 'Staff', 'Users'],
-            datasets: [{
-                data: <%= JSON.stringify(locals.userRoleData || [3, 8, 45]) %>,
-                backgroundColor: ['#dc3545', '#ffc107', '#0dcaf0']
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-});
-</script>
 
 <% function formatDate(date) {
     return new Date(date).toLocaleDateString('en-US', { 

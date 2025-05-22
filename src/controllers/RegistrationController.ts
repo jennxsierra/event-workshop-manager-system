@@ -190,7 +190,10 @@ export class RegistrationController extends BaseController {
         orderBy: { registeredAt: "desc" },
       });
 
-      this.render(res, "registrations/index", { registrations });
+      this.render(res, "registrations/index", {
+        registrations,
+        pageName: "registrations",
+      });
     });
   }
 }

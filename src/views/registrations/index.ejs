@@ -71,8 +71,8 @@
                         <% if (!registration.cancelled && new Date(registration.event.date) > new Date()) { %>
                             <form action="/registrations/events/<%= registration.event.id %>/cancel" 
                                   method="POST" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-outline-danger" 
-                                        onclick="return confirm('Are you sure you want to cancel this registration?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger confirm-action" 
+                                        data-confirm="Are you sure you want to cancel this registration?">
                                     Cancel Registration
                                 </button>
                             </form>

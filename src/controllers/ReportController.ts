@@ -21,7 +21,10 @@ export class ReportController extends BaseController {
       }
 
       const report = await this.reportManager.generateSummaryReport();
-      this.render(res, "reports/summary", { report });
+      this.render(res, "reports/summary", {
+        report,
+        pageName: "reports",
+      });
     });
   }
 
@@ -34,7 +37,10 @@ export class ReportController extends BaseController {
       }
 
       const report = await this.reportManager.generateDetailedReport();
-      this.render(res, "reports/detailed", { report });
+      this.render(res, "reports/detailed", {
+        report,
+        pageName: "reports",
+      });
     });
   }
 
@@ -47,7 +53,10 @@ export class ReportController extends BaseController {
       }
 
       const report = await this.reportManager.generateHistoricalReport();
-      this.render(res, "reports/historical", { report });
+      this.render(res, "reports/historical", {
+        report,
+        pageName: "reports",
+      });
     });
   }
 
@@ -59,7 +68,9 @@ export class ReportController extends BaseController {
         return this.renderError(res, "Unauthorized", 403);
       }
 
-      this.render(res, "reports/dashboard");
+      this.render(res, "reports/dashboard", {
+        pageName: "reports",
+      });
     });
   }
 }

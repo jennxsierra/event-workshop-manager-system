@@ -45,7 +45,23 @@
                 <h5 class="mb-0">Attendance by Event Category</h5>
             </div>
             <div class="card-body">
-                <canvas id="attendanceByCategory" height="250"></canvas>
+                <canvas id="attendanceByCategory" 
+                        height="250"
+                        data-chart="bar"
+                        data-chart-multiple-datasets="<%= encodeURIComponent(JSON.stringify([
+                            {
+                                label: 'Registered',
+                                data: [80, 65, 50, 30, 20],
+                                backgroundColor: 'rgba(13, 110, 253, 0.7)'
+                            },
+                            {
+                                label: 'Attended',
+                                data: [60, 45, 40, 25, 15],
+                                backgroundColor: 'rgba(25, 135, 84, 0.7)'
+                            }
+                        ])) %>"
+                        data-chart-labels="<%= encodeURIComponent(JSON.stringify(['Workshop', 'Training', 'Public Outreach', 'Press', 'Launch'])) %>">
+                </canvas>
             </div>
         </div>
     </div>
@@ -55,7 +71,13 @@
                 <h5 class="mb-0">Registration Status</h5>
             </div>
             <div class="card-body">
-                <canvas id="registrationStatus" height="250"></canvas>
+                <canvas id="registrationStatus" 
+                        height="250"
+                        data-chart="pie"
+                        data-chart-labels="<%= encodeURIComponent(JSON.stringify(['Attended', 'No-Show', 'Cancelled'])) %>"
+                        data-chart-values="<%= encodeURIComponent(JSON.stringify([stats.attendedCount || 0, (stats.totalRegistrations - stats.attendedCount - stats.cancelledCount) || 0, stats.cancelledCount || 0])) %>"
+                        data-chart-bg-colors="<%= encodeURIComponent(JSON.stringify(['#198754', '#ffc107', '#dc3545'])) %>">
+                </canvas>
             </div>
         </div>
     </div>
@@ -143,60 +165,6 @@
         </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // This is just a placeholder - actual data would be passed from the server
-    const categoryChart = new Chart(document.getElementById('attendanceByCategory'), {
-        type: 'bar',
-        data: {
-            labels: ['Workshop', 'Training', 'Public Outreach', 'Press', 'Launch'],
-            datasets: [{
-                label: 'Registered',
-                data: [80, 65, 50, 30, 20],
-                backgroundColor: 'rgba(13, 110, 253, 0.7)',
-                barPercentage: 0.6
-            }, {
-                label: 'Attended',
-                data: [60, 45, 40, 25, 15],
-                backgroundColor: 'rgba(25, 135, 84, 0.7)',
-                barPercentage: 0.6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    stacked: false
-                },
-                y: {
-                    stacked: false
-                }
-            }
-        }
-    });
-    
-    const statusChart = new Chart(document.getElementById('registrationStatus'), {
-        type: 'pie',
-        data: {
-            labels: ['Attended', 'No-Shows', 'Cancelled'],
-            datasets: [{
-                data: [65, 20, 15],
-                backgroundColor: [
-                    '#198754', // success
-                    '#ffc107', // warning
-                    '#dc3545'  // danger
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-});
-</script>
 
 <% function formatDate(date) {
     return new Date(date).toLocaleDateString('en-US', { 

@@ -53,14 +53,14 @@
             
             <% if(!isRegistered && (event.capacity - registrations.length) > 0) { %>
                 <form action="/registrations/events/<%= event.id %>/register" method="POST" class="mb-4">
-                    <button type="submit" class="btn btn-success">Register for this Event</button>
+                    <button type="submit" class="btn btn-success" data-event-id="<%= event.id %>">Register for this Event</button>
                 </form>
             <% } else if(isRegistered) { %>
                 <div class="alert alert-success mb-4">
                     You are registered for this event!
                     
                     <form action="/registrations/events/<%= event.id %>/cancel" method="POST" class="d-inline ms-3">
-                        <button type="submit" class="btn btn-sm btn-danger">Cancel Registration</button>
+                        <button type="submit" class="btn btn-sm btn-danger" data-event-id="<%= event.id %>">Cancel Registration</button>
                     </form>
                 </div>
             <% } else { %>
