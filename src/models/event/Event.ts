@@ -5,6 +5,7 @@ import { IEvent } from "./IEvent.js";
 export class Event implements IEvent {
   id?: bigint;
   name: string;
+  description?: string;
   date: Date;
   time: Date;
   endTime?: Date;
@@ -21,7 +22,8 @@ export class Event implements IEvent {
     category: EventCategory,
     capacity: number,
     id?: bigint,
-    endTime?: Date
+    endTime?: Date,
+    description?: string
   ) {
     this.name = name;
     this.date = date;
@@ -31,6 +33,7 @@ export class Event implements IEvent {
     this.capacity = capacity;
     this.id = id;
     this.endTime = endTime;
+    this.description = description;
     this.registrations = [];
   }
 

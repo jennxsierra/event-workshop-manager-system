@@ -4,6 +4,7 @@ import { Registration } from "./Registration.js";
 export interface IEvent {
   id?: bigint;
   name: string;
+  description?: string;
   date: Date;
   time: Date;
   endTime?: Date;

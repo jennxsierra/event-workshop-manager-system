@@ -43,6 +43,7 @@ model User {
 model Event {
   id         BigInt      @id @default(autoincrement())
   name       String
+  description String?    @db.Text @map("description")
   eventDate  DateTime    @map("event_date")
   startTime  DateTime    @map("start_time")
   endTime    DateTime?   @map("end_time")

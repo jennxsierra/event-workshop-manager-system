@@ -10,6 +10,13 @@
         </div>
     </div>
     <div class="card-body">
+        <% if(event.description) { %>
+        <div class="mb-4">
+            <h5>Description</h5>
+            <p><%= event.description %></p>
+        </div>
+        <% } %>
+        
         <div class="row mb-4">
             <div class="col-md-6">
                 <p class="mb-2">

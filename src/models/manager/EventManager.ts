@@ -20,6 +20,7 @@ export class EventManager implements IEventManager {
       await prisma.event.create({
         data: {
           name: event.name,
+          description: event.description,
           eventDate: event.date,
           startTime: event.time,
           endTime: event.endTime,
@@ -51,6 +52,7 @@ export class EventManager implements IEventManager {
         where: { id: event.id },
         data: {
           name: event.name,
+          description: event.description,
           eventDate: event.date,
           startTime: event.time,
           endTime: event.endTime,
@@ -165,7 +167,8 @@ export class EventManager implements IEventManager {
             e.category as EventCategory,
             e.capacity,
             e.id,
-            e.endTime || undefined
+            e.endTime || undefined,
+            e.description || undefined
           );
           
           // Convert database registration objects to Registration instances

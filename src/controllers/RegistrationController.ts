@@ -47,6 +47,23 @@ export class RegistrationController extends BaseController {
           "info"
         );
       }
+      
+      // Check if event has reached capacity
+      const activeRegistrationsCount = await prisma.registration.count({
+        where: {
+          eventId,
+          cancelled: false,
+        },
+      });
+
+      if (activeRegistrationsCount >= eventData.capacity) {
+        return this.redirectWithMessage(
+          res,
+          `/events/${eventId}`,
+          "Sorry, this event has reached its capacity",
+          "error"
+        );
+      }
 
       // Create event and participant objects
       const event = new Event(

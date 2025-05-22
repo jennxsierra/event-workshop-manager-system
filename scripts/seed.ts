@@ -140,7 +140,8 @@ async function createEvents(creatorId: bigint) {
       endTime: new Date(nextWeek.getTime() + 17 * 60 * 60 * 1000), // 5 PM
       location: 'Tech Hub, San Francisco',
       capacity: 50,
-      createdById: creatorId
+      createdById: creatorId,
+      description: 'This full-day workshop introduces participants to the fundamentals of web development. Topics include HTML5, CSS3, JavaScript basics, and responsive design. Perfect for beginners looking to start their journey in web development. All materials and lunch will be provided.'
     }),
     createEvent({
       name: 'Advanced React Patterns Workshop',
@@ -150,7 +151,8 @@ async function createEvents(creatorId: bigint) {
       endTime: new Date(nextWeek.getTime() + (14 * 24 * 60 * 60 * 1000) + 16 * 60 * 60 * 1000), // 4 PM
       location: 'Tech Hub, San Francisco',
       capacity: 40,
-      createdById: creatorId
+      createdById: creatorId,
+      description: 'Dive deep into advanced React design patterns with this intensive workshop. Learn about component composition, render props, custom hooks, state management strategies, and performance optimizations. This workshop is intended for developers with existing React experience who want to take their skills to the next level.'
     })
   ]);
   
@@ -164,7 +166,8 @@ async function createEvents(creatorId: bigint) {
       endTime: new Date(nextWeek.getTime() + (10 * 24 * 60 * 60 * 1000) + 17 * 60 * 60 * 1000), // 5 PM
       location: 'Business Center, Chicago',
       capacity: 25,
-      createdById: creatorId
+      createdById: creatorId,
+      description: 'An intensive leadership development program designed for emerging leaders and managers. This training focuses on essential leadership skills including effective communication, team building, conflict resolution, and strategic thinking. Participants will engage in hands-on exercises and receive personalized feedback throughout the day.'
     }),
     createEvent({
       name: 'Project Management Certification',
@@ -174,7 +177,8 @@ async function createEvents(creatorId: bigint) {
       endTime: new Date(nextMonth.getTime() + (15 * 24 * 60 * 60 * 1000) + 17 * 60 * 60 * 1000), // 5 PM
       location: 'Training Center, New York',
       capacity: 30,
-      createdById: creatorId
+      createdById: creatorId,
+      description: 'This comprehensive certification training prepares participants for the Project Management Professional (PMP) exam. The course covers all knowledge areas in the PMBOK Guide, including project integration, scope, time, cost, quality, resource, communications, risk, procurement, and stakeholder management. Includes study materials and practice exams.'
     })
   ]);
   
@@ -188,7 +192,8 @@ async function createEvents(creatorId: bigint) {
       endTime: new Date(nextMonth.getTime() + 16 * 60 * 60 * 1000), // 4 PM
       location: 'City Park, San Francisco',
       capacity: 200,
-      createdById: creatorId
+      createdById: creatorId,
+      description: 'Join us for the largest community tech fair in San Francisco! This free event features demonstrations of cutting-edge technology, interactive exhibits, educational workshops, and opportunities to connect with tech industry professionals. Family-friendly activities will be available for all age groups. Food vendors will be on site.'
     }),
     createEvent({
       name: 'Coding for Kids',
@@ -198,7 +203,8 @@ async function createEvents(creatorId: bigint) {
       endTime: new Date(nextWeek.getTime() + (21 * 24 * 60 * 60 * 1000) + 16 * 60 * 60 * 1000), // 4 PM
       location: 'Public Library, Seattle',
       capacity: 30,
-      createdById: creatorId
+      createdById: creatorId,
+      description: 'A fun, introductory coding workshop designed specifically for children aged 8-12. Participants will learn basic programming concepts through engaging games and activities. No prior coding experience required. All necessary equipment will be provided. Parents are welcome to observe or participate alongside their children.'
     })
   ]);
   
@@ -212,7 +218,8 @@ async function createEvents(creatorId: bigint) {
       endTime: new Date(nextWeek.getTime() + 16 * 60 * 60 * 1000), // 4 PM
       location: 'Conference Center, New York',
       capacity: 50,
-      createdById: creatorId
+      createdById: creatorId,
+      description: 'This quarterly media briefing will provide an overview of our Q2 financial results, strategic initiatives, and upcoming product roadmap. The session will include presentations from executive leadership followed by a Q&A session. Refreshments will be served. Press credentials required for entry.'
     }),
     createEvent({
       name: 'Annual Press Conference',
@@ -222,7 +229,8 @@ async function createEvents(creatorId: bigint) {
       endTime: new Date(twoMonthsLater.getTime() + (15 * 24 * 60 * 60 * 1000) + 12 * 60 * 60 * 1000), // 12 PM
       location: 'Media Center, Los Angeles',
       capacity: 75,
-      createdById: creatorId
+      createdById: creatorId,
+      description: 'Our flagship annual press conference where we will announce major company developments, reveal new products, and outline our vision for the coming year. The CEO and executive team will deliver presentations followed by an extensive media Q&A session. Light breakfast will be provided. Press credentials required.'
     })
   ]);
   
@@ -236,7 +244,8 @@ async function createEvents(creatorId: bigint) {
       endTime: new Date(nextMonth.getTime() + (5 * 24 * 60 * 60 * 1000) + 21 * 60 * 60 * 1000), // 9 PM
       location: 'Grand Hall, San Francisco',
       capacity: 300,
-      createdById: creatorId
+      createdById: creatorId,
+      description: 'Be among the first to experience our revolutionary Product X! This exclusive evening launch event will feature spectacular product demonstrations, hands-on experience zones, and presentations from the product development team. The event includes a cocktail reception with gourmet hors d\'oeuvres, entertainment, and a special gift bag for all attendees.'
     }),
     createEvent({
       name: 'Annual Software Release',
@@ -246,7 +255,8 @@ async function createEvents(creatorId: bigint) {
       endTime: new Date(twoMonthsLater.getTime() + 14 * 60 * 60 * 1000), // 2 PM
       location: 'Tech Campus, Mountain View',
       capacity: 150,
-      createdById: creatorId
+      createdById: creatorId,
+      description: 'Join us for the unveiling of our next-generation software platform. This event will showcase the new features, improvements, and integrations in our latest release. Technical demonstrations and breakout sessions will be led by our lead engineers and product managers. Lunch will be provided and attendees will receive early access to the beta version.'
     })
   ]);
   
@@ -260,7 +270,8 @@ async function createEvents(creatorId: bigint) {
       endTime: new Date(lastMonth.getTime() + 17 * 60 * 60 * 1000), // 5 PM
       location: 'Tech Hub, Austin',
       capacity: 40,
-      createdById: creatorId
+      createdById: creatorId,
+      description: 'Our popular web development workshop focused on spring framework developments and integrations. This workshop covered Spring Boot, Spring Security, and microservices architecture. Participants built a complete web application during the hands-on session with guidance from experienced instructors.'
     }),
     createEvent({
       name: 'Public Health Initiative',
@@ -270,7 +281,8 @@ async function createEvents(creatorId: bigint) {
       endTime: new Date(lastWeek.getTime() + 14 * 60 * 60 * 1000), // 2 PM
       location: 'Community Center, Miami',
       capacity: 80,
-      createdById: creatorId
+      createdById: creatorId,
+      description: 'A community outreach event focused on public health education and resources. Free health screenings were provided along with educational sessions on preventive care, nutrition, and mental health awareness. Local healthcare providers were present to answer questions and connect residents with available services.'
     }),
     createEvent({
       name: 'Winter Product Launch 2024',
@@ -280,7 +292,8 @@ async function createEvents(creatorId: bigint) {
       endTime: new Date(new Date(today.getFullYear() - 1, 11, 10).getTime() + 21 * 60 * 60 * 1000), // 9 PM
       location: 'Convention Center, Las Vegas',
       capacity: 450,
-      createdById: creatorId
+      createdById: creatorId,
+      description: 'Our largest product launch of 2024 unveiled our flagship product line for the coming year. The event featured keynote presentations from industry leaders, immersive product demonstrations, and networking opportunities with engineers and designers. The evening concluded with a gala dinner and entertainment by award-winning performers.'
     })
   ]);
   
@@ -301,7 +314,8 @@ async function createEvent(eventData: {
   endTime: Date,
   location: string,
   capacity: number,
-  createdById: bigint
+  createdById: bigint,
+  description?: string
 }) {
   return prisma.event.create({
     data: {
@@ -312,7 +326,8 @@ async function createEvent(eventData: {
       endTime: eventData.endTime,
       location: eventData.location,
       capacity: eventData.capacity,
-      createdById: eventData.createdById
+      createdById: eventData.createdById,
+      description: eventData.description
     }
   });
 }

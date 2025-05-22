@@ -61,15 +61,15 @@ export class EventController extends BaseController {
     await this.handleAsync(req, res, async () => {
       // Extract filter parameters
       const { category, date } = req.query;
-      
+
       // Apply filters if they exist
       const filters = {
         category: category as string,
         date: date as string,
       };
-      
+
       const events = await this.eventManager.getEvents(filters);
-      
+
       this.render(res, "events/index", {
         events,
         pageName: "events",
@@ -108,7 +108,8 @@ export class EventController extends BaseController {
           event.category as EventCategory,
           event.capacity,
           event.id,
-          event.endTime || undefined
+          event.endTime || undefined,
+          event.description || undefined
         ),
         registrations: event.registrations,
         pageName: "events",
@@ -138,8 +139,16 @@ export class EventController extends BaseController {
       }
 
       // Validate form data
-      const { name, date, time, location, category, capacity, endTime } =
-        req.body;
+      const {
+        name,
+        date,
+        time,
+        location,
+        category,
+        capacity,
+        endTime,
+        description,
+      } = req.body;
 
       if (!name || !date || !time || !location || !category || !capacity) {
         return this.render(res, "events/create", {
@@ -162,7 +171,8 @@ export class EventController extends BaseController {
         category as EventCategory,
         parseInt(capacity),
         undefined,
-        eventEndTime
+        eventEndTime,
+        description
       );
 
       // Save the event
@@ -187,11 +197,19 @@ export class EventController extends BaseController {
 
       const event = await prisma.event.findUnique({
         where: { id: eventId },
+        include: {
+          registrations: {
+            where: { cancelled: false },
+          },
+        },
       });
 
       if (!event) {
         return this.renderError(res, "Event not found", 404);
       }
+
+      // Count active registrations
+      const registrationsCount = event.registrations.length;
 
       this.render(res, "events/edit", {
         event: new Event(
@@ -202,10 +220,12 @@ export class EventController extends BaseController {
           event.category as EventCategory,
           event.capacity,
           event.id,
-          event.endTime || undefined
+          event.endTime || undefined,
+          event.description || undefined
         ),
         categories: Object.values(EventCategory),
         pageName: "events",
+        registrationsCount,
       });
     });
   }
@@ -226,14 +246,31 @@ export class EventController extends BaseController {
       const eventId = BigInt(req.params.id);
 
       // Validate form data
-      const { name, date, time, location, category, capacity, endTime } =
-        req.body;
+      const {
+        name,
+        date,
+        time,
+        location,
+        category,
+        capacity,
+        endTime,
+        description,
+      } = req.body;
 
       if (!name || !date || !time || !location || !category || !capacity) {
+        // Get registration count for error redisplay
+        const eventData = await prisma.event.findUnique({
+          where: { id: eventId },
+          include: { registrations: { where: { cancelled: false } } },
+        });
+
+        const registrationsCount = eventData?.registrations.length || 0;
+
         return this.render(res, "events/edit", {
           categories: Object.values(EventCategory),
           error: "All required fields must be filled",
           event: { ...req.body, id: eventId },
+          registrationsCount,
         });
       }
 
@@ -250,7 +287,8 @@ export class EventController extends BaseController {
         category as EventCategory,
         parseInt(capacity),
         eventId,
-        eventEndTime
+        eventEndTime,
+        description
       );
 
       // Update the event
@@ -263,10 +301,19 @@ export class EventController extends BaseController {
           "Event updated successfully"
         );
       } else {
+        // Get registration count for error redisplay
+        const eventData = await prisma.event.findUnique({
+          where: { id: eventId },
+          include: { registrations: { where: { cancelled: false } } },
+        });
+
+        const registrationsCount = eventData?.registrations.length || 0;
+
         this.render(res, "events/edit", {
           categories: Object.values(EventCategory),
           error: "Failed to update event",
           event: { ...req.body, id: eventId },
+          registrationsCount,
         });
       }
     });

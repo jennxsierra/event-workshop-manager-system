@@ -35,12 +35,39 @@ export class Participant extends User implements IParticipant {
         );
       }
 
-      await prisma.registration.create({
-        data: {
-          participantId: this.id,
-          eventId: event.id as bigint,
-        },
+      // Check if there's an existing registration (cancelled or not)
+      const existingRegistration = await prisma.registration.findUnique({
+        where: {
+          eventId_participantId: {
+            participantId: this.id,
+            eventId: event.id as bigint,
+          }
+        }
       });
+
+      if (existingRegistration && existingRegistration.cancelled) {
+        // If registration exists but was cancelled, reactivate it
+        await prisma.registration.update({
+          where: { id: existingRegistration.id },
+          data: {
+            cancelled: false,
+            cancelledAt: null,
+            // Update registration date to now
+            registeredAt: new Date()
+          }
+        });
+      } else if (!existingRegistration) {
+        // If no registration exists, create a new one
+        await prisma.registration.create({
+          data: {
+            participantId: this.id,
+            eventId: event.id as bigint,
+          },
+        });
+      } else {
+        // Registration exists and is active - nothing to do
+        // This case should be handled by the controller before calling this method
+      }
 
       return true;
     } catch (error) {

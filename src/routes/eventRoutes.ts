@@ -15,16 +15,18 @@ export class EventRouter extends BaseRouter {
   protected initializeRoutes(): void {
     // Public routes
     this.router.get("/", this.controller.getEvents.bind(this.controller));
-    this.router.get(
-      "/:id",
-      this.controller.getEventDetails.bind(this.controller)
-    );
-
+    
     // Protected routes (staff and admin only)
     this.router.get(
       "/new",
       authorize([Role.STAFF, Role.ADMIN]),
       this.controller.showCreateEventForm.bind(this.controller)
+    );
+    
+    // This route must come after /new to avoid parameter conflict
+    this.router.get(
+      "/:id",
+      this.controller.getEventDetails.bind(this.controller)
     );
     this.router.post(
       "/",

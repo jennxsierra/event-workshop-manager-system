@@ -33,8 +33,9 @@
                     <input type="number" class="form-control" id="capacity" name="capacity" 
                            value="<%= event.capacity %>" required min="1">
                     <div class="form-text">
-                        Current registrations: <%= registrationsCount || 0 %>
-                        <% if(registrationsCount > 0) { %>
+                        <% const regCount = typeof registrationsCount !== 'undefined' ? registrationsCount : 0; %>
+                        Current registrations: <%= regCount %>
+                        <% if(regCount > 0) { %>
                             (Reducing capacity below this number will prevent new registrations but won't affect existing ones)
                         <% } %>
                     </div>
