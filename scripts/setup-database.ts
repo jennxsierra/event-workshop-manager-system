@@ -139,6 +139,16 @@ const pgClient = new Client(clientConfig);
       console.log(chalk.blue('🔄 Seeding database...'));
       await execAsync('npm run db:seed');
       console.log(chalk.green('✓ Seeded database with sample data'));
+      
+      // Display sample credentials from README
+      console.log(chalk.yellow.bold('\n🔑 Start testing with the following credentials:'));
+      console.log(chalk.yellow('┌───────────────┬───────────┬─────────────┐'));
+      console.log(chalk.yellow('│ Role          │ Username  │ Password    │'));
+      console.log(chalk.yellow('├───────────────┼───────────┼─────────────┤'));
+      console.log(chalk.yellow('│ Admin         │ admin     │ admin123    │'));
+      console.log(chalk.yellow('│ Staff         │ janesmith │ password123 │'));
+      console.log(chalk.yellow('│ Participant   │ jamesd    │ password123 │'));
+      console.log(chalk.yellow('└───────────────┴───────────┴─────────────┘'));
     }
 
     console.log(chalk.green.bold('✅ Database setup completed successfully!'));
