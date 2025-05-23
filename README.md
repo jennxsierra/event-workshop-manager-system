@@ -4,7 +4,8 @@ This is an event and workshop management system designed to help organizations m
 
 It provides a user-friendly interface for both administrators and participants, allowing for easy event creation, registration, and management.
 
-## Table of Contents
+<details>
+<summary><h2>Table of Contents</h2></summary>
 
 - [Features](#features)
 - [Prerequisites](#prerequisites)
@@ -22,6 +23,8 @@ It provides a user-friendly interface for both administrators and participants, 
   - [Prisma Migration Issues](#prisma-migration-issues)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
+
+</details>
 
 ## Features
 
@@ -86,6 +89,14 @@ This script will:
 - Generate the Prisma client
 - Optionally seed the database with sample data
 
+These are some sample users that will be created which you can use to log in and test the application:
+
+| Role        | Username  | Password    |
+|-------------|-----------|-------------|
+| Admin       | admin     | admin123    |
+| Staff       | janesmith | password123 |
+| Participant | jamesd    | password123 |
+
 ### 5. Database Seeding
 
 You can manually seed the database with sample data by running:
@@ -98,9 +109,7 @@ This will populate the database with:
 
 - Sample users (admin, staff, and participants)
 - Various event categories (workshops, training sessions, public outreach events)
-- Sample event registrations
-
-All users are created with the password `password123` for testing purposes.
+- Sample event registrations and cancellations
 
 >[!NOTE]
 >
@@ -129,6 +138,7 @@ The application will be available at [http://localhost:3000](http://localhost:30
 
 ## Available Scripts
 
+- `npm run clean` - Cleans the build directory
 - `npm run dev` - Starts the development server with hot reload
 - `npm run build` - Builds the application for production
 - `npm run start` - Starts the production server
@@ -173,7 +183,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Acknowledgements
 
-- This project was developed as my final project for the *[CMPS2232] Object Oriented Programming* course under the Associate of Information Technology program at the [University of the Belize](https://www.ub.edu.bz/).
+- This project was developed as my final project for the **[CMPS2232] Object Oriented Programming** course under the Associate of Information Technology program at the [University of the Belize](https://www.ub.edu.bz/).
 - Special thanks to my instructor, Ms. Vernelle Sylvester, for her guidance throughout the course and for providing valuable feedback on the project.
 - Thanks to Mr. Dalwin Lewis for emparting his knowledge and experience in MVC architecture and design patterns.
 - Thanks to the open-source community for providing the tools and libraries that made this project possible. Long live open-source!
