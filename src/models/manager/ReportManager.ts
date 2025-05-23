@@ -11,8 +11,28 @@ export class ReportManager implements IReportManager {
 
   async generateSummaryReport(): Promise<any> {
     try {
+      const today = new Date();
+      
       // Get total events count
       const totalEvents = await prisma.event.count();
+      
+      // Get upcoming events count
+      const upcomingEvents = await prisma.event.count({
+        where: {
+          eventDate: {
+            gt: today
+          }
+        }
+      });
+      
+      // Get past events count
+      const pastEvents = await prisma.event.count({
+        where: {
+          eventDate: {
+            lt: today
+          }
+        }
+      });
 
       // Get registration statistics
       const totalRegistrations = await prisma.registration.count();
@@ -24,16 +44,50 @@ export class ReportManager implements IReportManager {
       const totalParticipants = await prisma.user.count({
         where: { role: "PARTICIPANT" },
       });
+      
+      // Calculate average registrations per event
+      const avgRegistrations = totalEvents > 0 ? totalRegistrations / totalEvents : 0;
+      
+      // Get event data for the performance summary table
+      const events = await prisma.event.findMany({
+        include: {
+          registrations: true,
+        },
+        orderBy: {
+          eventDate: 'desc'
+        },
+        take: 20, // Limit to most recent 20 events
+      });
+      
+      // Format event data for the table
+      const eventData = events.map((event) => {
+        const activeRegs = event.registrations.filter(reg => !reg.cancelled).length;
+        const attended = event.registrations.filter(reg => reg.attended === true).length;
+        
+        return {
+          id: event.id,
+          name: event.name,
+          date: event.eventDate,
+          category: event.category,
+          registrationCount: activeRegs,
+          capacity: event.capacity,
+          attendedCount: attended
+        };
+      });
 
       // Generate the summary report
       return {
         totalEvents,
+        upcomingEvents,
+        pastEvents,
         registrationStats: {
           total: totalRegistrations,
           active: activeRegistrations,
           cancelled: totalRegistrations - activeRegistrations,
         },
+        avgRegistrations,
         totalParticipants,
+        eventData,
         generatedAt: new Date(),
       };
     } catch (error) {

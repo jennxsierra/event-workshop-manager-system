@@ -23,6 +23,7 @@ export class ReportController extends BaseController {
       const stats = await this.reportManager.generateSummaryReport();
       this.render(res, "reports/events", {
         stats,
+        eventData: stats.eventData || [],
         pageName: "reports",
       });
     });
