@@ -22,24 +22,57 @@
 </div>
 
 <div class="row mt-3">
-    <!-- This would be replaced with actual event data in a future update -->
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <span class="badge bg-info float-end">WORKSHOP</span>
-                <h5 class="card-title">Sample Workshop</h5>
-                <p class="card-text text-muted mb-2">
-                    <i class="bi bi-calendar"></i> May 20, 2025
-                </p>
-                <p class="card-text">An example workshop description would go here.</p>
+    <% if (locals.upcomingEvents && upcomingEvents.length > 0) { %>
+        <% upcomingEvents.forEach(event => { %>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <span class="badge bg-<%= getBadgeClass(event.category) %> float-end"><%= event.category %></span>
+                        <h5 class="card-title"><%= event.name %></h5>
+                        <p class="card-text text-muted mb-2">
+                            <i class="bi bi-calendar"></i> <%= formatDate(event.eventDate) %>
+                        </p>
+                        <p class="card-text"><%= event.description || 'No description provided' %></p>
+                        <div class="small mb-2 text-muted">
+                            <i class="bi bi-people"></i> Registrations: <%= event.registrations.length %>/<%= event.capacity %>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a href="/events/<%= event.id %>" class="btn btn-sm btn-primary">View Details</a>
+                    </div>
+                </div>
             </div>
-            <div class="card-footer bg-white">
-                <a href="/events/1" class="btn btn-sm btn-primary">View Details</a>
-            </div>
+        <% }); %>
+    <% } else { %>
+        <div class="col-12">
+            <div class="alert alert-info">No upcoming events at this time. Check back soon!</div>
         </div>
-    </div>
+    <% } %>
     
     <div class="col-12 text-center mt-3">
         <a href="/events" class="btn btn-outline-primary">View All Events</a>
     </div>
 </div>
+
+<%
+// Helper function to format dates 
+function formatDate(date) {
+    return new Date(date).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric'
+    });
+}
+
+// Helper function to get badge color based on category
+function getBadgeClass(category) {
+    switch(category) {
+        case 'WORKSHOP': return 'info';
+        case 'TRAINING': return 'primary';
+        case 'PUBLIC_OUTREACH': return 'success';
+        case 'PRESS': return 'warning';
+        case 'LAUNCH': return 'danger';
+        default: return 'secondary';
+    }
+}
+%>

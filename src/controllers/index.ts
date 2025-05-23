@@ -4,3 +4,4 @@ export * from "./UserController.js";
 export * from "./AuthController.js";
 export * from "./RegistrationController.js";
 export * from "./ReportController.js";
+export * from "./HomeController.js";

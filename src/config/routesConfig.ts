@@ -1,4 +1,4 @@
-import { Express, Request, Response } from "express";
+import { Express } from "express";
 import {
   eventRoutes,
   userRoutes,
@@ -6,6 +6,7 @@ import {
   registrationRoutes,
   reportRoutes,
 } from "../routes/index.js";
+import { HomeController } from "../controllers/HomeController.js";
 import notFound from "../middleware/notFound.js";
 
 export const configureRoutes = (app: Express): void => {
@@ -16,10 +17,9 @@ export const configureRoutes = (app: Express): void => {
   app.use("/registrations", registrationRoutes);
   app.use("/reports", reportRoutes);
 
-  // Home route
-  app.get("/", (req: Request, res: Response) => {
-    res.render("home", { user: req.user });
-  });
+  // Home route with controller
+  const homeController = new HomeController();
+  app.get("/", homeController.getHomePage.bind(homeController));
 
   // 404 handler for undefined routes
   app.use(notFound);
