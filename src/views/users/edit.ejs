@@ -13,45 +13,46 @@
                 <div class="col-md-6 mb-3">
                     <label for="firstName" class="form-label">First Name</label>
                     <input type="text" class="form-control" id="firstName" name="firstName" 
-                           value="<%= user.firstName %>" required>
+                           value="<%= user.firstName %>" placeholder="e.g. Jane" required>
                 </div>
                 
                 <div class="col-md-6 mb-3">
                     <label for="lastName" class="form-label">Last Name</label>
                     <input type="text" class="form-control" id="lastName" name="lastName" 
-                           value="<%= user.lastName %>" required>
+                           value="<%= user.lastName %>" placeholder="e.g. Smith" required>
                 </div>
             </div>
             
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" name="username" 
-                       value="<%= user.username %>" required>
+                       value="<%= user.username %>" placeholder="e.g. jsmith123" required>
             </div>
             
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" 
-                       value="<%= user.email %>" required>
+                       value="<%= user.email %>" placeholder="e.g. example@domain.com" required>
             </div>
             
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="phone" class="form-label">Phone (optional)</label>
-                    <input type="tel" class="form-control" id="phone" name="phone" 
-                           value="<%= user.phone || '' %>">
+                    <input type="tel" class="form-control" id="phone" name="phone" data-phone="true"
+                           value="<%= user.phone || '' %>" placeholder="e.g. +501 612-3456">
+                    <div class="form-text">International format with country code (e.g. +501 612-3456)</div>
                 </div>
                 
                 <div class="col-md-6 mb-3">
                     <label for="organization" class="form-label">Organization (optional)</label>
                     <input type="text" class="form-control" id="organization" name="organization" 
-                           value="<%= user.organization || '' %>">
+                           value="<%= user.organization || '' %>" placeholder="e.g. University of Belize">
                 </div>
             </div>
             
             <div class="mb-3">
                 <label for="password" class="form-label">New Password (leave blank to keep current)</label>
-                <input type="password" class="form-control" id="password" name="password">
+                <input type="password" class="form-control" id="password" name="password" placeholder="••••••••">
                 <div class="form-text">Only fill this if you want to change the user's password.</div>
             </div>
             

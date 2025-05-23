@@ -14,13 +14,13 @@
                         <div class="col-md-6 mb-3">
                             <label for="firstName" class="form-label">First Name</label>
                             <input type="text" class="form-control" id="firstName" name="firstName" 
-                                value="<%= user.firstName %>" required>
+                                value="<%= user.firstName %>" placeholder="e.g. Jane" required>
                         </div>
                         
                         <div class="col-md-6 mb-3">
                             <label for="lastName" class="form-label">Last Name</label>
                             <input type="text" class="form-control" id="lastName" name="lastName" 
-                                value="<%= user.lastName %>" required>
+                                value="<%= user.lastName %>" placeholder="e.g. Smith" required>
                         </div>
                     </div>
                     
@@ -34,20 +34,21 @@
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" 
-                            value="<%= user.email %>" required>
+                            value="<%= user.email %>" placeholder="e.g. example@domain.com" required>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="phone" class="form-label">Phone (optional)</label>
                             <input type="tel" class="form-control" id="phone" name="phone" 
-                                value="<%= user.phone || '' %>">
+                                value="<%= user.phone || '' %>" placeholder="e.g. +501 612-3456">
+                            <div class="form-text">International format with country code</div>
                         </div>
                         
                         <div class="col-md-6 mb-3">
                             <label for="organization" class="form-label">Organization (optional)</label>
                             <input type="text" class="form-control" id="organization" name="organization" 
-                                value="<%= user.organization || '' %>">
+                                value="<%= user.organization || '' %>" placeholder="e.g. University of Belize">
                         </div>
                     </div>
                     
@@ -66,17 +67,17 @@
                 <form action="/users/profile/password?_method=PUT" method="POST">
                     <div class="mb-3">
                         <label for="currentPassword" class="form-label">Current Password</label>
-                        <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                        <input type="password" class="form-control" id="currentPassword" name="currentPassword" placeholder="••••••••" required>
                     </div>
                     
                     <div class="mb-3">
                         <label for="newPassword" class="form-label">New Password</label>
-                        <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" placeholder="••••••••" required>
                     </div>
                     
                     <div class="mb-3">
                         <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
-                        <input type="password" class="form-control" id="confirmNewPassword" name="confirmNewPassword" required>
+                        <input type="password" class="form-control" id="confirmNewPassword" name="confirmNewPassword" placeholder="••••••••" required>
                     </div>
                     
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">

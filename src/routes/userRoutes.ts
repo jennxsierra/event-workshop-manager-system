@@ -36,6 +36,12 @@ export class UserRouter extends BaseRouter {
       this.controller.showEditProfileForm.bind(this.controller)
     );
 
+    // Support /users/:id/edit format for the edit route
+    this.router.get(
+      "/:id/edit",
+      this.controller.showEditProfileForm.bind(this.controller)
+    );
+
     // Admin only routes
     this.router.get(
       "/",

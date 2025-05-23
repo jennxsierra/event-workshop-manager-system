@@ -19,7 +19,9 @@ const Validator = {
    */
   isValidPhone(phone) {
     if (!phone) return true; // Optional field
-    const re = /^\+?[0-9]{10,15}$/;
+    // Allow international format with country code, spaces, hyphens, parentheses, and periods
+    // This supports international formats from any country
+    const re = /^\+?[\d\s\-()\.\+]{7,20}$/;
     return re.test(phone);
   },
   
