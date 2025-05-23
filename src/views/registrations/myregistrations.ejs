@@ -43,7 +43,7 @@
                         <p><strong>Registered on:</strong> <%= new Date(registration.registeredAt).toLocaleDateString() %></p>
                         
                         <% if (!registration.cancelled && new Date(registration.event.eventDate) > new Date()) { %>
-                            <form action="/events/<%= registration.eventId %>/cancel" method="POST" class="mt-3">
+                            <form action="/registrations/events/<%= registration.eventId %>/cancel" method="POST" class="mt-3">
                                 <button type="submit" class="btn btn-danger btn-sm" 
                                     onclick="return confirm('Are you sure you want to cancel your registration for this event?')">
                                     Cancel Registration

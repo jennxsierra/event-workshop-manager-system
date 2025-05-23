@@ -200,7 +200,7 @@ export class RegistrationController extends BaseController {
       if (success) {
         this.redirectWithMessage(
           res,
-          `/events/${eventId}`,
+          "/registrations",
           "Registration cancelled successfully"
         );
       } else {
