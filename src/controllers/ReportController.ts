@@ -20,9 +20,9 @@ export class ReportController extends BaseController {
         return this.renderError(res, "Unauthorized", 403);
       }
 
-      const report = await this.reportManager.generateSummaryReport();
+      const stats = await this.reportManager.generateSummaryReport();
       this.render(res, "reports/events", {
-        report,
+        stats,
         pageName: "reports",
       });
     });
@@ -36,9 +36,34 @@ export class ReportController extends BaseController {
         return this.renderError(res, "Unauthorized", 403);
       }
 
-      const report = await this.reportManager.generateDetailedReport();
+      // Get query parameters for filters
+      const category = req.query.category as string | undefined;
+      const startDate = req.query.startDate as string | undefined;
+      const endDate = req.query.endDate as string | undefined;
+      
+      // Create filters object
+      const filters = {
+        category,
+        startDate,
+        endDate
+      };
+      
+      // Create query string for export link
+      let queryString = '';
+      if (req.query) {
+        queryString = Object.keys(req.query)
+          .map(key => `${key}=${encodeURIComponent(req.query[key] as string)}`)
+          .join('&');
+      }
+
+      const stats = await this.reportManager.generateDetailedReport(filters);
+      
+      // Add attendanceData to the template variables if not included in stats
       this.render(res, "reports/attendance", {
-        report,
+        stats,
+        filters,
+        attendanceData: stats.attendanceData || [],
+        queryString,
         pageName: "reports",
       });
     });
@@ -52,9 +77,9 @@ export class ReportController extends BaseController {
         return this.renderError(res, "Unauthorized", 403);
       }
 
-      const report = await this.reportManager.generateHistoricalReport();
+      const stats = await this.reportManager.generateHistoricalReport();
       this.render(res, "reports/exports", {
-        report,
+        stats,
         pageName: "reports",
       });
     });

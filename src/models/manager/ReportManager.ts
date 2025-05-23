@@ -42,27 +42,76 @@ export class ReportManager implements IReportManager {
     }
   }
 
-  async generateDetailedReport(): Promise<any> {
+  async generateDetailedReport(filters?: { category?: string; startDate?: string; endDate?: string }): Promise<any> {
     try {
-      // Get events with registration counts
+      // Build where clause based on filters
+      const whereClause: any = {};
+      
+      if (filters?.category) {
+        whereClause.category = filters.category;
+      }
+      
+      // Add date filters if provided
+      if (filters?.startDate) {
+        whereClause.eventDate = {
+          ...(whereClause.eventDate || {}),
+          gte: new Date(filters.startDate)
+        };
+      }
+      
+      if (filters?.endDate) {
+        whereClause.eventDate = {
+          ...(whereClause.eventDate || {}),
+          lte: new Date(filters.endDate)
+        };
+      }
+      
+      // Get events with registration counts - include all registrations, not just non-cancelled ones
       const events = await prisma.event.findMany({
+        where: whereClause,
         include: {
-          registrations: {
-            where: { cancelled: false },
-          },
+          registrations: true, // Include all registrations to calculate different metrics
         },
+        orderBy: {
+          eventDate: 'desc' // Sort by most recent first
+        }
       });
 
-      const eventReports = events.map((event) => ({
-        id: event.id,
-        name: event.name,
-        date: event.eventDate,
-        registrationCount: event.registrations.length,
-        capacityPercentage: (event.registrations.length / event.capacity) * 100,
-      }));
+      // Compute statistics
+      const totalRegistrations = events.reduce((sum, event) => sum + event.registrations.length, 0);
+      const attendedCount = events.reduce((sum, event) => {
+        return sum + event.registrations.filter(reg => reg.attended === true).length;
+      }, 0);
+      const cancelledCount = events.reduce((sum, event) => {
+        return sum + event.registrations.filter(reg => reg.cancelled === true).length;
+      }, 0);
+      const attendanceRate = totalRegistrations > 0 ? 
+        (attendedCount / (totalRegistrations - cancelledCount)) * 100 : 0;
+      
+      // Format event data for the table
+      const attendanceData = events.map((event) => {
+        const totalRegs = event.registrations.length;
+        const attended = event.registrations.filter(reg => reg.attended === true).length;
+        const cancelled = event.registrations.filter(reg => reg.cancelled === true).length;
+        
+        return {
+          id: event.id,
+          name: event.name,
+          date: event.eventDate,
+          category: event.category,
+          totalRegistrations: totalRegs,
+          attendedCount: attended,
+          cancelledCount: cancelled
+        };
+      });
 
       return {
-        events: eventReports,
+        events: attendanceData,
+        attendanceData, // Add this for template compatibility
+        totalRegistrations,
+        attendedCount,
+        cancelledCount,
+        attendanceRate,
         generatedAt: new Date(),
       };
     } catch (error) {
