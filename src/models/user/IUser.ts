@@ -10,7 +10,7 @@ export interface IUser {
   organization?: string;
   role: Role;
 
-  // Methods
-  login(): Promise<boolean>;
+  // Authentication methods
+  login(password: string): Promise<boolean>;
   logout(): void;
 }

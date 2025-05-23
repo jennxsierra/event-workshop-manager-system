@@ -28,16 +28,61 @@ export class AuthController extends BaseController {
         });
       }
 
-      // Find user by username
-      const user = await prisma.user.findFirst({
+      // First find the basic user info to create appropriate User object
+      const userData = await prisma.user.findFirst({
         where: {
           username,
           deletedAt: null,
         },
       });
 
-      // Check if user exists and password is correct
-      if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+      if (!userData) {
+        return this.render(res, "auth/login", {
+          error: "Invalid username or password",
+          username,
+        });
+      }
+      
+      // Create the appropriate user type instance
+      let userInstance;
+      const { Participant, Staff, Administrator } = await import("../models/user/index.js");
+      
+      if (userData.role === Role.ADMIN) {
+        userInstance = new Administrator(
+          username, 
+          userData.firstName, 
+          userData.lastName, 
+          userData.email,
+          userData.phone || undefined,
+          userData.organization || undefined,
+          userData.id
+        );
+      } else if (userData.role === Role.STAFF) {
+        userInstance = new Staff(
+          username, 
+          userData.firstName, 
+          userData.lastName, 
+          userData.email,
+          userData.phone || undefined,
+          userData.organization || undefined,
+          userData.id
+        );
+      } else {
+        userInstance = new Participant(
+          username, 
+          userData.firstName, 
+          userData.lastName, 
+          userData.email,
+          userData.phone || undefined,
+          userData.organization || undefined,
+          userData.id
+        );
+      }
+      
+      // Use the user class login method to authenticate
+      const loginSuccess = await userInstance.login(password);
+      
+      if (!loginSuccess) {
         return this.render(res, "auth/login", {
           error: "Invalid username or password",
           username,
@@ -45,10 +90,10 @@ export class AuthController extends BaseController {
       }
 
       // Set session
-      req.session.userId = user.id.toString();
+      req.session.userId = userInstance.id!.toString();
 
       // Redirect to dashboard or home page
-      this.redirectWithMessage(res, "/", `Welcome back, ${user.firstName}!`);
+      this.redirectWithMessage(res, "/", `Welcome back, ${userInstance.firstName}!`);
     });
   }
 
@@ -161,7 +206,49 @@ export class AuthController extends BaseController {
   }
 
   // Process logout request
-  logout(req: Request, res: Response): void {
+  async logout(req: Request, res: Response): Promise<void> {
+    // If there's a user in the request, call the logout method
+    if (req.user) {
+      // Create an instance of the appropriate user class
+      const { Participant, Staff, Administrator } = await import("../models/user/index.js");
+      
+      let userInstance;
+      if (req.user.role === Role.ADMIN) {
+        userInstance = new Administrator(
+          req.user.username,
+          req.user.firstName,
+          req.user.lastName,
+          req.user.email,
+          req.user.phone,
+          req.user.organization,
+          req.user.id
+        );
+      } else if (req.user.role === Role.STAFF) {
+        userInstance = new Staff(
+          req.user.username,
+          req.user.firstName,
+          req.user.lastName,
+          req.user.email,
+          req.user.phone,
+          req.user.organization,
+          req.user.id
+        );
+      } else {
+        userInstance = new Participant(
+          req.user.username,
+          req.user.firstName,
+          req.user.lastName,
+          req.user.email,
+          req.user.phone,
+          req.user.organization,
+          req.user.id
+        );
+      }
+      
+      // Call the user's logout method
+      userInstance.logout();
+    }
+    
     // Clear session userId
     req.session.userId = undefined;
 
