@@ -33,6 +33,28 @@ export class ReportRouter extends BaseRouter {
       authorize([Role.ADMIN]),
       this.controller.getExports.bind(this.controller)
     );
+
+    // CSV export routes
+    this.router.get(
+      "/events/export",
+      authorize([Role.ADMIN]),
+      this.controller.exportEventsCSV.bind(this.controller)
+    );
+    this.router.get(
+      "/registrations/export",
+      authorize([Role.ADMIN]),
+      this.controller.exportRegistrationsCSV.bind(this.controller)
+    );
+    this.router.get(
+      "/workshops/export",
+      authorize([Role.ADMIN]),
+      this.controller.exportWorkshopsCSV.bind(this.controller)
+    );
+    this.router.get(
+      "/attendance/export",
+      authorize([Role.ADMIN]),
+      this.controller.exportAttendanceCSV.bind(this.controller)
+    );
   }
 }
 
