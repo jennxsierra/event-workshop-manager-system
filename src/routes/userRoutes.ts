@@ -48,6 +48,13 @@ export class UserRouter extends BaseRouter {
       this.controller.showEditProfileForm.bind(this.controller)
     );
 
+    // Delete user (admin only)
+    this.router.delete(
+      "/:id",
+      authorize([Role.ADMIN]),
+      this.controller.deleteUser.bind(this.controller)
+    );
+
     // Admin only routes
     this.router.get(
       "/",

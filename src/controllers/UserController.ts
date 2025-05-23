@@ -330,4 +330,52 @@ export class UserController extends BaseController {
       }
     });
   }
+
+  // Delete a user (admin only)
+  async deleteUser(req: Request, res: Response): Promise<void> {
+    await this.handleAsync(req, res, async () => {
+      // Check if user is admin
+      if (!req.user || req.user.role !== Role.ADMIN) {
+        return this.renderError(res, "Unauthorized", 403);
+      }
+
+      const userId = req.params.id ? BigInt(req.params.id) : undefined;
+
+      if (!userId) {
+        return this.renderError(res, "Invalid user ID", 400);
+      }
+
+      // Don't allow admins to delete themselves
+      if (req.user.id === userId) {
+        return this.redirectWithMessage(
+          res,
+          "/users",
+          "You cannot delete your own account",
+          "error"
+        );
+      }
+
+      try {
+        // Soft delete by setting deletedAt field
+        await prisma.user.update({
+          where: { id: userId },
+          data: { deletedAt: new Date() }
+        });
+
+        this.redirectWithMessage(
+          res,
+          "/users",
+          "User deleted successfully"
+        );
+      } catch (error) {
+        console.error("Failed to delete user:", error);
+        this.redirectWithMessage(
+          res,
+          "/users",
+          "Failed to delete user",
+          "error"
+        );
+      }
+    });
+  }
 }
