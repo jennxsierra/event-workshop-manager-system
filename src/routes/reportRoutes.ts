@@ -19,19 +19,19 @@ export class ReportRouter extends BaseRouter {
       this.controller.getReportsDashboard.bind(this.controller)
     );
     this.router.get(
-      "/summary",
+      "/events",
       authorize([Role.ADMIN]),
-      this.controller.getSummaryReport.bind(this.controller)
+      this.controller.getEventReports.bind(this.controller)
     );
     this.router.get(
-      "/detailed",
+      "/attendance",
       authorize([Role.ADMIN]),
-      this.controller.getDetailedReport.bind(this.controller)
+      this.controller.getAttendanceReports.bind(this.controller)
     );
     this.router.get(
-      "/historical",
+      "/exports",
       authorize([Role.ADMIN]),
-      this.controller.getHistoricalReport.bind(this.controller)
+      this.controller.getExports.bind(this.controller)
     );
   }
 }

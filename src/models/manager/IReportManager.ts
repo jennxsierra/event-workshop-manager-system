@@ -6,4 +6,5 @@ export interface IReportManager {
   generateSummaryReport(): Promise<any>;
   generateDetailedReport(): Promise<any>;
   generateHistoricalReport(): Promise<any>;
+  generateSystemStats(): Promise<any>;
 }

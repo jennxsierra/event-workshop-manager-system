@@ -124,4 +124,27 @@ export class ReportManager implements IReportManager {
       throw error;
     }
   }
+  
+  async generateSystemStats(): Promise<any> {
+    try {
+      // Get total events
+      const totalEvents = await prisma.event.count();
+      
+      // Get total registrations
+      const totalRegistrations = await prisma.registration.count();
+      
+      // Get total users
+      const totalUsers = await prisma.user.count();
+      
+      return {
+        totalEvents,
+        totalRegistrations,
+        totalUsers,
+        generatedAt: new Date(),
+      };
+    } catch (error) {
+      console.error("Failed to generate system stats:", error);
+      throw error;
+    }
+  }
 }

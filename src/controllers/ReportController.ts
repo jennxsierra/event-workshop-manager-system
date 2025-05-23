@@ -12,8 +12,8 @@ export class ReportController extends BaseController {
     this.reportManager = new ReportManager(new EventManager());
   }
 
-  // Generate and show summary report (admin only)
-  async getSummaryReport(req: Request, res: Response): Promise<void> {
+  // Event reports (admin only)
+  async getEventReports(req: Request, res: Response): Promise<void> {
     await this.handleAsync(req, res, async () => {
       // Check if user is admin
       if (!req.user || req.user.role !== Role.ADMIN) {
@@ -21,15 +21,15 @@ export class ReportController extends BaseController {
       }
 
       const report = await this.reportManager.generateSummaryReport();
-      this.render(res, "reports/summary", {
+      this.render(res, "reports/events", {
         report,
         pageName: "reports",
       });
     });
   }
 
-  // Generate and show detailed report (admin only)
-  async getDetailedReport(req: Request, res: Response): Promise<void> {
+  // Attendance reports (admin only)
+  async getAttendanceReports(req: Request, res: Response): Promise<void> {
     await this.handleAsync(req, res, async () => {
       // Check if user is admin
       if (!req.user || req.user.role !== Role.ADMIN) {
@@ -37,15 +37,15 @@ export class ReportController extends BaseController {
       }
 
       const report = await this.reportManager.generateDetailedReport();
-      this.render(res, "reports/detailed", {
+      this.render(res, "reports/attendance", {
         report,
         pageName: "reports",
       });
     });
   }
 
-  // Generate and show historical report (admin only)
-  async getHistoricalReport(req: Request, res: Response): Promise<void> {
+  // Data exports (admin only)
+  async getExports(req: Request, res: Response): Promise<void> {
     await this.handleAsync(req, res, async () => {
       // Check if user is admin
       if (!req.user || req.user.role !== Role.ADMIN) {
@@ -53,7 +53,7 @@ export class ReportController extends BaseController {
       }
 
       const report = await this.reportManager.generateHistoricalReport();
-      this.render(res, "reports/historical", {
+      this.render(res, "reports/exports", {
         report,
         pageName: "reports",
       });
@@ -68,8 +68,12 @@ export class ReportController extends BaseController {
         return this.renderError(res, "Unauthorized", 403);
       }
 
-      this.render(res, "reports/dashboard", {
+      // Get system statistics for the dashboard
+      const stats = await this.reportManager.generateSystemStats();
+
+      this.render(res, "reports/index", {
         pageName: "reports",
+        stats: stats
       });
     });
   }
