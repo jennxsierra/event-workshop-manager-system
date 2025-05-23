@@ -93,12 +93,12 @@
                                     <a href="/events/<%= registration.eventId %>" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-eye"></i> View
                                     </a>
-                                    <form action="/registrations/events/<%= registration.eventId %>/cancel" method="POST">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger confirm-action" 
-                                                data-confirm="Are you sure you want to cancel this registration?">
-                                            <i class="bi bi-x-circle"></i> Cancel
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            data-cancel-registration
+                                            data-event-name="<%= registration.event.name %>"
+                                            data-cancel-url="/registrations/events/<%= registration.eventId %>/cancel">
+                                        <i class="bi bi-x-circle"></i> Cancel
+                                    </button>
                                 </div>
                             <% } else { %>
                                 <a href="/events/<%= registration.eventId %>" class="btn btn-sm btn-outline-primary">

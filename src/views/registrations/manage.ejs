@@ -108,12 +108,12 @@
                                                     <% } %>
                                                 </button>
                                             </form>
-                                            <form action="/registrations/<%= reg.id %>/cancel" method="POST">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" style="width: 100px;"
-                                                        onclick="return confirm('Are you sure you want to cancel this registration?')">
-                                                    <i class="bi bi-trash"></i> Cancel
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" style="width: 100px;"
+                                                    data-cancel-registration
+                                                    data-event-name="<%= reg.event.name %>"
+                                                    data-cancel-url="/registrations/<%= reg.id %>/cancel">
+                                                <i class="bi bi-trash"></i> Cancel
+                                            </button>
                                         <% } else { %>
                                             <form action="/registrations/<%= reg.id %>/restore" method="POST">
                                                 <button type="submit" class="btn btn-sm btn-outline-success" style="width: 100px;">

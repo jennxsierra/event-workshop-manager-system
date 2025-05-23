@@ -80,9 +80,12 @@
                     You are registered for this event!
                     
                     <% if (!eventPassed) { %>
-                        <form action="/registrations/events/<%= event.id %>/cancel" method="POST" class="d-inline ms-3">
-                            <button type="submit" class="btn btn-sm btn-danger" data-event-id="<%= event.id %>">Cancel Registration</button>
-                        </form>
+                        <button type="button" class="btn btn-sm btn-danger d-inline ms-3"
+                            data-cancel-registration
+                            data-event-name="<%= event.name %>"
+                            data-cancel-url="/registrations/events/<%= event.id %>/cancel">
+                            Cancel Registration
+                        </button>
                     <% } %>
                 </div>
             <% } else if (!eventPassed) { %>

@@ -276,7 +276,7 @@ export class RegistrationController extends BaseController {
 
       this.render(res, "registrations/myregistrations", {
         registrations,
-        pageName: "myregistrations",
+        pageName: "registrations",
         tab: tab,
         currentDate: now
       });

@@ -1,0 +1,56 @@
+/* Notification modal styles */
+.notification-modal .modal-dialog {
+  max-width: 400px;
+}
+
+.notification-modal .modal-content {
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.notification-modal .modal-header {
+  padding: 0.75rem 1.25rem;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+}
+
+.notification-modal .btn-close-white {
+  filter: brightness(0) invert(1);
+}
+
+.notification-modal.modal-success .modal-header {
+  background-color: var(--success);
+}
+
+.notification-modal.modal-danger .modal-header {
+  background-color: var(--danger);
+}
+
+.notification-modal.modal-warning .modal-header {
+  background-color: var(--warning);
+}
+
+.notification-modal.modal-info .modal-header {
+  background-color: var(--info);
+}
+
+/* Fade-in animation for modals */
+.notification-modal.fade .modal-dialog {
+  transform: translate(0, -50px);
+  transition: transform 0.3s ease-out;
+}
+
+.notification-modal.show .modal-dialog {
+  transform: none;
+}
+
+/* Confirmation modal styling */
+.confirmation-modal .modal-dialog {
+  max-width: 450px;
+}
+
+.confirmation-modal .modal-footer {
+  justify-content: space-between;
+  padding: 1rem;
+}

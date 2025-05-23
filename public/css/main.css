@@ -14,6 +14,7 @@
 @import url("components/cards.css");
 @import url("components/forms.css");
 @import url("components/badges.css");
+@import url("components/modals.css");
 
 /* Pages */
 @import url("pages/home.css");
