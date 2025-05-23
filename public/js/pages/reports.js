@@ -1,7 +1,7 @@
 /**
  * JavaScript for report-related pages
  */
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function() {
   // Initialize charts if we're on a reports page with charts
   initializeReportCharts();
 
@@ -53,13 +53,21 @@ function initializeReportCharts() {
           const values = JSON.parse(
             decodeURIComponent(canvas.dataset.chartValues || "[]")
           );
+          
+          // Handle background colors if provided as an array
+          let backgroundColor;
+          if (canvas.dataset.chartBgColors) {
+            backgroundColor = JSON.parse(decodeURIComponent(canvas.dataset.chartBgColors));
+          } else {
+            backgroundColor = canvas.dataset.chartBgColor || "rgba(13, 110, 253, 0.7)";
+          }
+          
           datasets.push({
             label: canvas.dataset.chartLabel || "Value",
             data: values,
-            backgroundColor:
-              canvas.dataset.chartBgColor || "rgba(13, 110, 253, 0.7)",
+            backgroundColor: backgroundColor,
             borderColor:
-              canvas.dataset.chartBorderColor || "rgba(13, 110, 253, 1)",
+              canvas.dataset.chartBorderColor || "rgba(0, 0, 0, 0.2)",
             borderWidth: 1,
           });
         }
@@ -80,7 +88,31 @@ function initializeReportCharts() {
 
         // Add specific options based on chart type
         if (chartType === "pie" || chartType === "doughnut") {
-          chartOptions.legend = { position: "right" };
+          // For Chart.js 2.x, legend is a top-level property
+          chartOptions.legend = { 
+            position: "right",
+            align: "center",
+            labels: {
+              boxWidth: 15,
+              padding: 20,
+              usePointStyle: true,
+              fontColor: "#666"
+            }
+          };
+          
+          // Apply special formatting for charts with legends
+          if (canvas.id === "eventsByCategory" || canvas.id === "registrationStatus") {
+            chartOptions.legend = {
+              position: "right", 
+              align: "start",
+              labels: {
+                boxWidth: 12,
+                padding: 15,
+                usePointStyle: true,
+                fontColor: "#666"
+              }
+            };
+          }
         } else if (chartType === "bar" || chartType === "line") {
           chartOptions.scales = {
             yAxes: [
@@ -92,6 +124,11 @@ function initializeReportCharts() {
         }
       }
 
+      // For pie and doughnut charts, ensure consistent presentation
+      if (chartType === "pie" || chartType === "doughnut") {
+        chartOptions.maintainAspectRatio = true;
+      }
+      
       // Create the chart
       new Chart(canvas.getContext("2d"), {
         type: chartType,

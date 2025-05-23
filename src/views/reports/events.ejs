@@ -66,8 +66,9 @@
             </div>
             <div class="card-body">
                 <canvas id="eventsByCategory" 
-                        height="250" 
-                        data-chart="doughnut"
+                        height="250"
+                        class="chartjs-render-monitor"
+                        data-chart="pie"
                         data-chart-labels="<%= encodeURIComponent(JSON.stringify(['Workshop', 'Training', 'Public Outreach', 'Press', 'Launch'])) %>"
                         data-chart-values="<%= encodeURIComponent(JSON.stringify([30, 25, 20, 15, 10])) %>"
                         data-chart-bg-colors="<%= encodeURIComponent(JSON.stringify(['#0dcaf0', '#0d6efd', '#198754', '#ffc107', '#dc3545'])) %>">

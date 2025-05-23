@@ -1,0 +1,64 @@
+/**
+ * Styles for report pages
+ */
+
+/* Ensure all chart containers have consistent height */
+.card-body canvas[data-chart] {
+  display: block;
+  margin: 0 auto;
+  max-height: 250px;
+  width: 100% !important;
+}
+
+/* Ensure chart legends are properly displayed */
+.chart-legend-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.chart-legend-color {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  margin-right: 8px;
+  border-radius: 3px;
+}
+
+/* Add specific spacing for chart legends */
+.category-legend {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+}
+
+/* Fix for chart canvas to ensure it doesn't get distorted */
+canvas#eventsByCategory {
+  margin: 0 auto;
+}
+
+/* Make sure there's enough space for the legend items */
+@media (max-width: 768px) {
+  .chart-container-with-legend {
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    padding-bottom: 20px;
+  }
+  
+  canvas#eventsByCategory {
+    margin-bottom: 20px;
+  }
+  
+  .category-legend {
+    margin-left: 0;
+    margin-top: 20px;
+  }
+}

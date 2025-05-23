@@ -22,6 +22,11 @@
     <!-- Main CSS -->
     <link rel="stylesheet" href="/css/main.css">
     
+    <!-- Page-specific CSS -->
+    <% if (locals.pageName === 'reports') { %>
+        <link rel="stylesheet" href="/css/pages/reports.css">
+    <% } %>
+    
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
@@ -53,12 +58,14 @@
         crossorigin="anonymous"></script>
         
     <!-- Chart.js (if used for reports/dashboard) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
     
     <!-- Common JavaScript utilities -->
     <script src="/js/common/utils.js"></script>
     <script src="/js/common/validation.js"></script>
     <script src="/js/common/dom.js"></script>
+    <script src="/js/common/charts.js"></script>
+    <script src="/js/common/chart-legends.js"></script>
     
     <!-- Components JavaScript -->
     <script src="/js/components/forms.js"></script>

@@ -70,10 +70,25 @@ const ChartUtils = {
       case "doughnut":
         return {
           ...baseOptions,
+          maintainAspectRatio: true,
+          aspectRatio: 1, // Square aspect for better proportions
+          cutoutPercentage: 70, // Bigger donut hole (Chart.js 2.x)
+          layout: {
+            padding: {
+              left: 5,
+              right: 60, // More padding on right for legend
+              top: 10,
+              bottom: 10
+            }
+          },
           legend: {
             position: "right",
+            align: "start", // Better vertical alignment
             labels: {
-              padding: 20,
+              padding: 15,
+              boxWidth: 12,
+              usePointStyle: true,
+              fontColor: "#666",
             },
           },
           tooltips: {
