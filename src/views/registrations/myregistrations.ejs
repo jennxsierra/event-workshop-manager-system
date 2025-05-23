@@ -60,7 +60,15 @@
     </div>
 <% } else { %>
     <div class="alert alert-info">
-        <p>No upcoming event registrations found.</p>
+        <% if (tab === 'upcoming') { %>
+            <p>No upcoming event registrations found.</p>
+        <% } else if (tab === 'past') { %>
+            <p>No past event registrations found.</p>
+        <% } else if (tab === 'cancelled') { %>
+            <p>No cancelled registrations found.</p>
+        <% } else { %>
+            <p>No registrations found.</p>
+        <% } %>
         <p>Browse events to see available events.</p>
     </div>
 <% } %>
