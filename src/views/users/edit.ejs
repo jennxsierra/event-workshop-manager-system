@@ -29,6 +29,17 @@
                        value="<%= user.username %>" placeholder="e.g. jsmith123" required>
             </div>
             
+            <% if(locals.isAdmin) { %>
+                <div class="mb-3">
+                    <label for="role" class="form-label">Role</label>
+                    <select class="form-select" id="role" name="role" required>
+                        <option value="PARTICIPANT" <%= user.role === 'PARTICIPANT' ? 'selected' : '' %>>Participant</option>
+                        <option value="STAFF" <%= user.role === 'STAFF' ? 'selected' : '' %>>Staff</option>
+                        <option value="ADMIN" <%= user.role === 'ADMIN' ? 'selected' : '' %>>Administrator</option>
+                    </select>
+                </div>
+            <% } %>
+            
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" 
@@ -55,17 +66,6 @@
                 <input type="password" class="form-control" id="password" name="password" placeholder="••••••••">
                 <div class="form-text">Only fill this if you want to change the user's password.</div>
             </div>
-            
-            <% if(locals.user && locals.user.role === 'ADMIN') { %>
-                <div class="mb-3">
-                    <label for="role" class="form-label">Role</label>
-                    <select class="form-select" id="role" name="role" required>
-                        <option value="USER" <%= user.role === 'USER' ? 'selected' : '' %>>User</option>
-                        <option value="STAFF" <%= user.role === 'STAFF' ? 'selected' : '' %>>Staff</option>
-                        <option value="ADMIN" <%= user.role === 'ADMIN' ? 'selected' : '' %>>Administrator</option>
-                    </select>
-                </div>
-            <% } %>
             
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <a href="/users" class="btn btn-outline-secondary">Cancel</a>
