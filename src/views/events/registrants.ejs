@@ -103,24 +103,28 @@
                                     <% } %>
                                 </td>
                                 <td>
-                                    <div class="btn-group btn-group-sm">
+                                    <div class="d-flex">
                                         <% if(!reg.cancelled) { %>
-                                            <form action="/registrations/<%= reg.id %>/attendance" method="POST">
+                                            <form action="/registrations/<%= reg.id %>/attendance" method="POST" class="me-2">
                                                 <input type="hidden" name="attended" value="<%= reg.attended ? 'false' : 'true' %>">
-                                                <button type="submit" class="btn btn-outline-<%= reg.attended ? 'warning' : 'success' %>">
-                                                    <%= reg.attended ? 'Mark Not Attended' : 'Mark Attended' %>
+                                                <button type="submit" class="btn btn-sm btn-outline-<%= reg.attended ? 'warning' : 'success' %>" style="width: 140px;">
+                                                    <% if(reg.attended) { %>
+                                                        <i class="bi bi-x-circle"></i> Not Attended
+                                                    <% } else { %>
+                                                        <i class="bi bi-check-circle"></i> Mark Attended
+                                                    <% } %>
                                                 </button>
                                             </form>
-                                            <form action="/registrations/<%= reg.id %>/cancel" method="POST" class="ms-2">
-                                                <button type="submit" class="btn btn-outline-danger confirm-action" 
-                                                        data-confirm="Are you sure you want to cancel this registration?">
-                                                    Cancel Registration
+                                            <form action="/registrations/<%= reg.id %>/cancel" method="POST">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" style="width: 100px;"
+                                                        onclick="return confirm('Are you sure you want to cancel this registration?')">
+                                                    <i class="bi bi-trash"></i> Cancel
                                                 </button>
                                             </form>
                                         <% } else { %>
                                             <form action="/registrations/<%= reg.id %>/restore" method="POST">
-                                                <button type="submit" class="btn btn-outline-success">
-                                                    Restore Registration
+                                                <button type="submit" class="btn btn-sm btn-outline-success" style="width: 100px;">
+                                                    <i class="bi bi-arrow-counterclockwise"></i> Restore
                                                 </button>
                                             </form>
                                         <% } %>

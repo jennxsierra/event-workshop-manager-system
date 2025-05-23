@@ -375,4 +375,59 @@ export class RegistrationController extends BaseController {
       });
     });
   }
+
+  // Mark attendance for a participant
+  async markAttendance(req: Request, res: Response): Promise<void> {
+    await this.handleAsync(req, res, async () => {
+      // Check if user is authorized
+      if (!req.user || !["ADMIN", "STAFF"].includes(req.user.role)) {
+        return this.renderError(res, "Unauthorized", 403);
+      }
+
+      const registrationId = BigInt(req.params.id);
+      
+      // Check if registration exists
+      const registration = await prisma.registration.findUnique({
+        where: { id: registrationId },
+        include: { event: true, participant: true }
+      });
+
+      if (!registration) {
+        return this.renderError(res, "Registration not found", 404);
+      }
+
+      // Check if registration is already cancelled
+      if (registration.cancelled) {
+        return this.redirectWithMessage(
+          res,
+          "/registrations/manage",
+          "Cannot mark attendance for a cancelled registration",
+          "error"
+        );
+      }
+
+      // Get the attendance status from the form
+      const markAsAttended = req.body.attended === 'true';
+      
+      // Update the registration attendance status
+      await prisma.registration.update({
+        where: { id: registrationId },
+        data: {
+          attended: markAsAttended,
+          attendedAt: markAsAttended ? new Date() : null
+        }
+      });
+
+      // Redirect back to the manage registrations page with a success message
+      const message = markAsAttended
+        ? `Successfully marked ${registration.participant?.firstName || 'participant'} as attended for ${registration.event?.name}`
+        : `Successfully marked ${registration.participant?.firstName || 'participant'} as not attended for ${registration.event?.name}`;
+        
+      this.redirectWithMessage(
+        res,
+        "/registrations/manage",
+        message
+      );
+    });
+  }
 }

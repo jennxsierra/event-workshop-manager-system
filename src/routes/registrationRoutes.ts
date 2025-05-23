@@ -34,6 +34,13 @@ export class RegistrationRouter extends BaseRouter {
       authorize([Role.STAFF, Role.ADMIN]),
       this.controller.viewAllRegistrations.bind(this.controller)
     );
+    
+    // Attendance management route
+    this.router.post(
+      "/:id/attendance",
+      authorize([Role.STAFF, Role.ADMIN]),
+      this.controller.markAttendance.bind(this.controller)
+    );
   }
 }
 
