@@ -34,6 +34,15 @@
                 <input type="email" class="form-control" id="email" name="email" 
                        value="<%= locals.formData?.email || '' %>" placeholder="e.g. example@domain.com" required>
             </div>
+
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <select class="form-select" id="role" name="role" required>
+                    <option value="PARTICIPANT" <%= locals.formData?.role === 'PARTICIPANT' ? 'selected' : '' %>>Participant</option>
+                    <option value="STAFF" <%= locals.formData?.role === 'STAFF' ? 'selected' : '' %>>Staff</option>
+                    <option value="ADMIN" <%= locals.formData?.role === 'ADMIN' ? 'selected' : '' %>>Administrator</option>
+                </select>
+            </div>
             
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -60,15 +69,6 @@
                     <label for="confirmPassword" class="form-label">Confirm Password</label>
                     <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required>
                 </div>
-            </div>
-            
-            <div class="mb-3">
-                <label for="role" class="form-label">Role</label>
-                <select class="form-select" id="role" name="role" required>
-                    <option value="USER" <%= locals.formData?.role === 'USER' ? 'selected' : '' %>>User</option>
-                    <option value="STAFF" <%= locals.formData?.role === 'STAFF' ? 'selected' : '' %>>Staff</option>
-                    <option value="ADMIN" <%= locals.formData?.role === 'ADMIN' ? 'selected' : '' %>>Administrator</option>
-                </select>
             </div>
             
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">

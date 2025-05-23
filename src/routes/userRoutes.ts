@@ -61,6 +61,20 @@ export class UserRouter extends BaseRouter {
       authorize([Role.ADMIN]),
       this.controller.getUsers.bind(this.controller)
     );
+    
+    // Create user form (admin only)
+    this.router.get(
+      "/create",
+      authorize([Role.ADMIN]),
+      this.controller.showCreateForm.bind(this.controller)
+    );
+    
+    // Create user submission (admin only)
+    this.router.post(
+      "/",
+      authorize([Role.ADMIN]),
+      this.controller.createUser.bind(this.controller)
+    );
   }
 }
 

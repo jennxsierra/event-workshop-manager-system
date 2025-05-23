@@ -6,6 +6,7 @@ import { Staff } from "../models/user/Staff.js";
 import { Participant } from "../models/user/Participant.js";
 import prisma from "../lib/prisma.js";
 import { Prisma } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 export class UserController extends BaseController {
   // Helper to safely handle null or undefined
@@ -35,6 +36,94 @@ export class UserController extends BaseController {
         users,
         pageName: "users",
       });
+    });
+  }
+  
+  // Show the create user form (admin only)
+  async showCreateForm(req: Request, res: Response): Promise<void> {
+    await this.handleAsync(req, res, async () => {
+      // Check if user is admin
+      const user = req.user;
+      if (!user || user.role !== Role.ADMIN) {
+        return this.renderError(res, "Unauthorized", 403);
+      }
+
+      this.render(res, "users/create", {
+        formData: {},
+        pageName: "users",
+      });
+    });
+  }
+
+  // Create a new user (admin only)
+  async createUser(req: Request, res: Response): Promise<void> {
+    await this.handleAsync(req, res, async () => {
+      // Check if user is admin
+      const user = req.user;
+      if (!user || user.role !== Role.ADMIN) {
+        return this.renderError(res, "Unauthorized", 403);
+      }
+
+      const { firstName, lastName, username, email, phone, organization, password, confirmPassword, role } = req.body;
+      
+      // Validate form data
+      if (password !== confirmPassword) {
+        return this.render(res, "users/create", {
+          error: "Passwords do not match",
+          formData: req.body,
+          pageName: "users",
+        });
+      }
+      
+      try {
+        // Check if username or email already exists
+        const existingUser = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { username },
+              { email },
+            ],
+            deletedAt: null,
+          },
+        });
+        
+        if (existingUser) {
+          const errorField = existingUser.username === username ? "username" : "email";
+          return this.render(res, "users/create", {
+            error: `This ${errorField} is already in use`,
+            formData: req.body,
+            pageName: "users",
+          });
+        }
+        
+        // Hash password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        
+        // Create the user
+        await prisma.user.create({
+          data: {
+            firstName: firstName,
+            lastName: lastName,
+            username: username,
+            email: email,
+            phone: phone || null,
+            organization: organization || null,
+            passwordHash: hashedPassword,
+            role: role as Role,
+          },
+        });
+        
+        // Redirect to user list with success message
+        return this.redirectWithMessage(res, "/users", "User created successfully", "success");
+      } catch (error) {
+        console.error("Error creating user:", error);
+        return this.render(res, "users/create", {
+          error: "An error occurred while creating the user",
+          formData: req.body,
+          pageName: "users",
+        });
+      }
     });
   }
 
