@@ -467,4 +467,102 @@ export class UserController extends BaseController {
       }
     });
   }
+
+  // Change user password
+  async changePassword(req: Request, res: Response): Promise<void> {
+    await this.handleAsync(req, res, async () => {
+      // Can only change own password
+      const userId = req.user?.id;
+
+      if (!userId) {
+        return this.redirectWithMessage(
+          res,
+          "/auth/login",
+          "Please log in to change your password",
+          "error"
+        );
+      }
+
+      const { currentPassword, newPassword, confirmNewPassword } = req.body;
+
+      // Validate input
+      if (!currentPassword || !newPassword || !confirmNewPassword) {
+        return this.redirectWithMessage(
+          res,
+          "/users/profile",
+          "All password fields are required",
+          "error"
+        );
+      }
+
+      if (newPassword !== confirmNewPassword) {
+        return this.redirectWithMessage(
+          res,
+          "/users/profile",
+          "New passwords do not match",
+          "error"
+        );
+      }
+
+      // Password strength check
+      if (newPassword.length < 8) {
+        return this.redirectWithMessage(
+          res,
+          "/users/profile",
+          "New password must be at least 8 characters long",
+          "error"
+        );
+      }
+
+      try {
+        // Get current user data
+        const userData = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { passwordHash: true }
+        });
+
+        if (!userData) {
+          return this.renderError(res, "User not found", 404);
+        }
+
+        // Verify current password
+        const isCurrentPasswordValid = await bcrypt.compare(
+          currentPassword,
+          userData.passwordHash
+        );
+
+        if (!isCurrentPasswordValid) {
+          return this.redirectWithMessage(
+            res,
+            "/users/profile",
+            "Current password is incorrect",
+            "error"
+          );
+        }
+
+        // Hash and update the new password
+        const newPasswordHash = await bcrypt.hash(newPassword, 10);
+        
+        await prisma.user.update({
+          where: { id: userId },
+          data: { passwordHash: newPasswordHash }
+        });
+
+        return this.redirectWithMessage(
+          res,
+          "/users/profile",
+          "Password changed successfully",
+          "success"
+        );
+      } catch (error) {
+        console.error("Failed to change password:", error);
+        return this.redirectWithMessage(
+          res,
+          "/users/profile",
+          "Failed to change password. Please try again.",
+          "error"
+        );
+      }
+    });
+  }
 }

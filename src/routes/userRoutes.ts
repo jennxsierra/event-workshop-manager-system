@@ -24,6 +24,12 @@ export class UserRouter extends BaseRouter {
       this.controller.updateProfile.bind(this.controller)
     );
     
+    // Change password route
+    this.router.put(
+      "/profile/password",
+      this.controller.changePassword.bind(this.controller)
+    );
+    
     // Add POST route for updating specific users (for the form submission)
     this.router.post(
       "/:id",
