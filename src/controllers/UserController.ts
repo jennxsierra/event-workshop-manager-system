@@ -78,9 +78,27 @@ export class UserController extends BaseController {
             })
           : [];
 
+      // Calculate activity statistics
+      const currentDate = new Date();
+      let stats = {
+        registrations: 0,
+        attended: 0,
+        upcoming: 0
+      };
+      
+      if (registrations.length > 0) {
+        // Total registrations
+        stats.registrations = registrations.length;
+        
+        // Count attended vs upcoming events
+        stats.attended = registrations.filter(reg => new Date(reg.event.eventDate) < currentDate).length;
+        stats.upcoming = registrations.filter(reg => new Date(reg.event.eventDate) >= currentDate).length;
+      }
+
       this.render(res, "users/profile", {
         user: userData,
         registrations,
+        stats,
         isOwnProfile: req.user?.id === userId,
         pageName: "users",
       });
