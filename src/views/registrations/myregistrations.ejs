@@ -1,0 +1,66 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>My Registrations</h1>
+    <a href="/events" class="btn btn-primary">Browse Events</a>
+</div>
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link <%= tab === 'upcoming' ? 'active' : '' %>" href="/registrations?tab=upcoming">
+            Upcoming Events
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link <%= tab === 'past' ? 'active' : '' %>" href="/registrations?tab=past">
+            Past Events
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link <%= tab === 'cancelled' ? 'active' : '' %>" href="/registrations?tab=cancelled">
+            Cancelled Registrations
+        </a>
+    </li>
+</ul>
+
+<% if (registrations && registrations.length > 0) { %>
+    <div class="row">
+        <% registrations.forEach(registration => { %>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 <%= registration.cancelled ? 'border-danger' : (registration.attended ? 'border-success' : '') %>">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><%= registration.event.name %></h5>
+                        <% if (registration.cancelled) { %>
+                            <span class="badge bg-danger">Cancelled</span>
+                        <% } else if (registration.attended) { %>
+                            <span class="badge bg-success">Attended</span>
+                        <% } else { %>
+                            <span class="badge bg-primary">Registered</span>
+                        <% } %>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Date:</strong> <%= new Date(registration.event.eventDate).toLocaleDateString() %></p>
+                        <p><strong>Time:</strong> <%= new Date(registration.event.eventDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %></p>
+                        <p><strong>Location:</strong> <%= registration.event.location %></p>
+                        <p><strong>Registered on:</strong> <%= new Date(registration.registeredAt).toLocaleDateString() %></p>
+                        
+                        <% if (!registration.cancelled && new Date(registration.event.eventDate) > new Date()) { %>
+                            <form action="/events/<%= registration.eventId %>/cancel" method="POST" class="mt-3">
+                                <button type="submit" class="btn btn-danger btn-sm" 
+                                    onclick="return confirm('Are you sure you want to cancel your registration for this event?')">
+                                    Cancel Registration
+                                </button>
+                            </form>
+                        <% } %>
+                    </div>
+                    <div class="card-footer bg-light">
+                        <a href="/events/<%= registration.eventId %>" class="btn btn-outline-primary btn-sm">View Event Details</a>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+<% } else { %>
+    <div class="alert alert-info">
+        <p>No upcoming event registrations found.</p>
+        <p>Browse events to see available events.</p>
+    </div>
+<% } %>

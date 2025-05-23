@@ -214,14 +214,19 @@ export class RegistrationController extends BaseController {
     });
   }
 
-  // View all registrations (admin and staff only)
-  async viewAllRegistrations(req: Request, res: Response): Promise<void> {
+  // View user's own registrations
+  async viewMyRegistrations(req: Request, res: Response): Promise<void> {
     await this.handleAsync(req, res, async () => {
-      // Check if user is authorized
-      if (!req.user || !["ADMIN", "STAFF"].includes(req.user.role)) {
-        return this.renderError(res, "Unauthorized", 403);
+      // Check if user is logged in
+      if (!req.user) {
+        return this.redirectWithMessage(
+          res,
+          "/auth/login",
+          "Please log in to view your registrations",
+          "error"
+        );
       }
-
+      
       // Get the tab from query parameter, default to 'upcoming' if not provided
       const tab = req.query.tab as string || 'upcoming';
       
@@ -229,10 +234,13 @@ export class RegistrationController extends BaseController {
       const now = new Date();
       
       // Prepare filter conditions based on tab
-      let whereCondition: any = {};
+      let whereCondition: any = {
+        participantId: req.user.id,
+      };
       
       if (tab === 'upcoming') {
         whereCondition = {
+          ...whereCondition,
           event: {
             eventDate: {
               gte: now,
@@ -242,6 +250,7 @@ export class RegistrationController extends BaseController {
         };
       } else if (tab === 'past') {
         whereCondition = {
+          ...whereCondition,
           event: {
             eventDate: {
               lt: now,
@@ -251,6 +260,7 @@ export class RegistrationController extends BaseController {
         };
       } else if (tab === 'cancelled') {
         whereCondition = {
+          ...whereCondition,
           cancelled: true
         };
       }
@@ -264,11 +274,104 @@ export class RegistrationController extends BaseController {
         orderBy: { registeredAt: "desc" },
       });
 
-      this.render(res, "registrations/index", {
+      this.render(res, "registrations/myregistrations", {
         registrations,
-        pageName: "registrations",
+        pageName: "myregistrations",
         tab: tab,
         currentDate: now
+      });
+    });
+  }
+
+  // View all registrations (admin and staff only)
+  async viewAllRegistrations(req: Request, res: Response): Promise<void> {
+    await this.handleAsync(req, res, async () => {
+      // Check if user is authorized
+      if (!req.user || !["ADMIN", "STAFF"].includes(req.user.role)) {
+        return this.renderError(res, "Unauthorized", 403);
+      }
+      
+      // No longer filtering by default - show all registrations
+      let whereCondition: any = {};
+      
+      // Get events for the filter dropdown
+      const events = await prisma.event.findMany({
+        orderBy: { name: "asc" },
+      });
+      
+      // Get the filters from query parameters
+      const filters = {
+        eventId: req.query.eventId ? BigInt(req.query.eventId as string) : undefined,
+        status: req.query.status as string || "",
+        search: req.query.search as string || "",
+      };
+      
+      // Apply additional filters if provided
+      if (filters.eventId) {
+        whereCondition.eventId = filters.eventId;
+      }
+      
+      if (filters.status === 'registered') {
+        whereCondition.cancelled = false;
+        whereCondition.attended = false;
+      } else if (filters.status === 'attended') {
+        whereCondition.attended = true;
+        whereCondition.cancelled = false; // Only non-cancelled registrations can be marked as attended
+      } else if (filters.status === 'cancelled') {
+        whereCondition.cancelled = true;
+      }
+      
+      if (filters.search) {
+        whereCondition.participant = {
+          OR: [
+            { firstName: { contains: filters.search } },
+            { lastName: { contains: filters.search } },
+            { email: { contains: filters.search } }
+          ]
+        };
+      }
+
+      // Pagination
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = 10;
+      const skip = (page - 1) * limit;
+      
+      // Get total count for pagination
+      const totalItems = await prisma.registration.count({
+        where: whereCondition,
+      });
+      
+      const totalPages = Math.ceil(totalItems / limit);
+
+      const registrations = await prisma.registration.findMany({
+        where: whereCondition,
+        include: {
+          event: true,
+          participant: true,
+        },
+        orderBy: { registeredAt: "desc" },
+        skip,
+        take: limit,
+      });
+
+      // Build query string for use in export link and pagination
+      const queryParams = new URLSearchParams(req.query as any);
+      queryParams.delete('page'); // Remove page from the query params for clean pagination links
+      const queryString = queryParams.toString();
+
+      this.render(res, "registrations/manage", {
+        registrations,
+        events,
+        pageName: "registrations",
+        filters,
+        queryString,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalItems,
+          baseUrl: '/registrations/manage',
+          queryParams: queryString ? `&${queryString}` : ''
+        }
       });
     });
   }

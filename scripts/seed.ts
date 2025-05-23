@@ -612,12 +612,16 @@ async function createRegistrations(events: any[], participants: any[]) {
       // Add potential cancellation data
       const isCancelled = Math.random() < 0.1; // 10% chance of cancellation
 
+      // For past events, determine if the participant attended (60% chance if not cancelled)
+      const isAttended = isPastEvent && !isCancelled && Math.random() < 0.6;
+
       // Create data object for registration
       const registrationData: any = {
         eventId: event.id,
         participantId: participant.id,
         registeredAt: regDate,
         cancelled: isCancelled,
+        attended: isAttended,
       };
 
       // Only add cancelledAt if it's cancelled

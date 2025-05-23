@@ -71,6 +71,8 @@ model Registration {
   registeredAt  DateTime @default(now()) @map("registered_at")
   cancelled     Boolean  @default(false)
   cancelledAt   DateTime? @map("cancelled_at")
+  attended      Boolean  @default(false)
+  attendedAt    DateTime? @map("attended_at")
 
   @@unique([eventId, participantId])
   @@index([eventId],       name: "idx_regs_event")

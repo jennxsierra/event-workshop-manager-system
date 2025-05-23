@@ -22,9 +22,15 @@ export class RegistrationRouter extends BaseRouter {
       this.controller.cancelRegistration.bind(this.controller)
     );
 
-    // Admin/staff routes
+    // Registration view routes - accessible by all users
     this.router.get(
       "/",
+      this.controller.viewMyRegistrations.bind(this.controller)
+    );
+
+    // Admin/staff management routes
+    this.router.get(
+      "/manage", 
       authorize([Role.STAFF, Role.ADMIN]),
       this.controller.viewAllRegistrations.bind(this.controller)
     );

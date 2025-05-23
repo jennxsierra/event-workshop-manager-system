@@ -26,7 +26,7 @@
                 <label for="status" class="form-label">Status</label>
                 <select class="form-select" id="status" name="status">
                     <option value="">All Statuses</option>
-                    <option value="active" <%= locals.filters?.status === 'active' ? 'selected' : '' %>>Active</option>
+                    <option value="registered" <%= locals.filters?.status === 'registered' ? 'selected' : '' %>>Registered</option>
                     <option value="attended" <%= locals.filters?.status === 'attended' ? 'selected' : '' %>>Attended</option>
                     <option value="cancelled" <%= locals.filters?.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
                 </select>
@@ -73,7 +73,7 @@
                             <tr>
                                 <td>
                                     <a href="/events/<%= reg.event.id %>"><%= reg.event.name %></a>
-                                    <small class="d-block text-muted"><%= formatDate(reg.event.date) %></small>
+                                    <small class="d-block text-muted"><%= formatDate(reg.event.eventDate) %></small>
                                 </td>
                                 <td>
                                     <% if(reg.participant) { %>
@@ -83,7 +83,7 @@
                                         <em>Deleted User</em>
                                     <% } %>
                                 </td>
-                                <td><%= formatDate(reg.event.date) %></td>
+                                <td><%= formatDate(reg.event.eventDate) %></td>
                                 <td><%= formatDateTime(reg.registeredAt) %></td>
                                 <td>
                                     <% if(reg.cancelled) { %>
