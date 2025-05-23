@@ -430,4 +430,117 @@ export class RegistrationController extends BaseController {
       );
     });
   }
+
+  // Cancel a registration by ID (Admin/Staff action)
+  async cancelRegistrationById(req: Request, res: Response): Promise<void> {
+    await this.handleAsync(req, res, async () => {
+      // Check if user is authorized
+      if (!req.user || !["ADMIN", "STAFF"].includes(req.user.role)) {
+        return this.renderError(res, "Unauthorized", 403);
+      }
+
+      const registrationId = BigInt(req.params.id);
+      
+      // Check if registration exists
+      const registration = await prisma.registration.findUnique({
+        where: { id: registrationId },
+        include: { event: true, participant: true }
+      });
+
+      if (!registration) {
+        return this.renderError(res, "Registration not found", 404);
+      }
+
+      // Check if registration is already cancelled
+      if (registration.cancelled) {
+        return this.redirectWithMessage(
+          res,
+          "/registrations/manage",
+          "This registration is already cancelled",
+          "info"
+        );
+      }
+
+      // Update the registration status
+      await prisma.registration.update({
+        where: { id: registrationId },
+        data: {
+          cancelled: true,
+          cancelledAt: new Date()
+        }
+      });
+
+      // Redirect back to the manage registrations page with a success message
+      this.redirectWithMessage(
+        res,
+        "/registrations/manage",
+        `Successfully cancelled registration for ${registration.participant?.firstName || 'participant'} for ${registration.event?.name}`
+      );
+    });
+  }
+
+  // Restore a cancelled registration
+  async restoreRegistration(req: Request, res: Response): Promise<void> {
+    await this.handleAsync(req, res, async () => {
+      // Check if user is authorized
+      if (!req.user || !["ADMIN", "STAFF"].includes(req.user.role)) {
+        return this.renderError(res, "Unauthorized", 403);
+      }
+
+      const registrationId = BigInt(req.params.id);
+      
+      // Check if registration exists
+      const registration = await prisma.registration.findUnique({
+        where: { id: registrationId },
+        include: { event: true, participant: true }
+      });
+
+      if (!registration) {
+        return this.renderError(res, "Registration not found", 404);
+      }
+
+      // Check if registration is not cancelled (nothing to restore)
+      if (!registration.cancelled) {
+        return this.redirectWithMessage(
+          res,
+          "/registrations/manage",
+          "This registration is not cancelled",
+          "info"
+        );
+      }
+
+      // Check if event has reached capacity before restoring
+      const activeRegistrationsCount = await prisma.registration.count({
+        where: {
+          eventId: registration.eventId,
+          cancelled: false,
+        },
+      });
+
+      if (registration.event && activeRegistrationsCount >= registration.event.capacity) {
+        return this.redirectWithMessage(
+          res,
+          "/registrations/manage",
+          "Cannot restore registration - event has reached capacity",
+          "error"
+        );
+      }
+
+      // Update the registration status
+      await prisma.registration.update({
+        where: { id: registrationId },
+        data: {
+          cancelled: false,
+          cancelledAt: null
+        }
+      });
+
+      // Redirect back to the manage registrations page with a success message
+      this.redirectWithMessage(
+        res,
+        "/registrations/manage",
+        `Successfully restored registration for ${registration.participant?.firstName || 'participant'} for ${registration.event?.name}`
+      );
+    });
+  }
 }

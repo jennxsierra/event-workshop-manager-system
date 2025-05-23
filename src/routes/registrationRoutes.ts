@@ -41,6 +41,19 @@ export class RegistrationRouter extends BaseRouter {
       authorize([Role.STAFF, Role.ADMIN]),
       this.controller.markAttendance.bind(this.controller)
     );
+    
+    // Cancel/restore registration by ID routes
+    this.router.post(
+      "/:id/cancel",
+      authorize([Role.STAFF, Role.ADMIN]),
+      this.controller.cancelRegistrationById.bind(this.controller)
+    );
+    
+    this.router.post(
+      "/:id/restore",
+      authorize([Role.STAFF, Role.ADMIN]),
+      this.controller.restoreRegistration.bind(this.controller)
+    );
   }
 }
 
