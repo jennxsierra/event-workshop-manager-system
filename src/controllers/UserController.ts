@@ -5,6 +5,7 @@ import { Administrator } from "../models/user/Administrator.js";
 import { Staff } from "../models/user/Staff.js";
 import { Participant } from "../models/user/Participant.js";
 import prisma from "../lib/prisma.js";
+import { Prisma } from "@prisma/client";
 
 export class UserController extends BaseController {
   // Helper to safely handle null or undefined
@@ -144,14 +145,21 @@ export class UserController extends BaseController {
   // Update user profile
   async updateProfile(req: Request, res: Response): Promise<void> {
     await this.handleAsync(req, res, async () => {
+      // Default to the current user's ID
       let userId = req.user?.id;
-
+      
+      // Check the URL pattern to determine whose profile we're updating
       if (req.params.id && req.params.id !== "profile") {
         try {
+          // This is an admin editing another user
           userId = BigInt(req.params.id);
-        } catch {
+          console.log(`Admin editing user with ID: ${userId} via path parameter`);
+        } catch (e) {
+          console.error(`Invalid user ID in params: ${req.params.id}`);
           userId = req.user?.id;
         }
+      } else {
+        console.log(`User editing their own profile (ID: ${userId})`);
       }
 
       if (!userId) {
@@ -178,6 +186,11 @@ export class UserController extends BaseController {
 
       // Extract form data
       const { firstName, lastName, email, phone, organization } = req.body;
+
+      // Check if the submitted email is the same as the current user's email
+      if (email.trim().toLowerCase() === userData.email.trim().toLowerCase()) {
+        console.log("Email unchanged, using original email for consistency");
+      }
 
       // Only admins can change roles
       let role = userData.role;
@@ -223,6 +236,7 @@ export class UserController extends BaseController {
 
         // Update the user profile
         if (req.user?.role === Role.ADMIN) {
+          console.log(`Admin ${req.user.username} (ID: ${req.user.id}) is updating user ${user.username} (ID: ${user.id})`);
           const admin = new Administrator(
             req.user.username,
             req.user.firstName,
@@ -234,31 +248,84 @@ export class UserController extends BaseController {
           );
           await admin.updateUser(user);
         } else {
-          // Regular user updating their own profile
+          // Regular user updating their own profile - using the same approach as in Administrator
+          // Important! Update non-email fields first
           await prisma.user.update({
             where: { id: userId },
             data: {
               firstName,
               lastName,
-              email,
               phone,
               organization,
             },
           });
+          
+          // Now check if we need to update the email separately
+          const currentUserInDb = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { email: true },
+          });
+          
+          // Only try to update email if it's actually different
+          if (currentUserInDb && currentUserInDb.email !== email) {
+            try {
+              await prisma.user.update({
+                where: { id: userId },
+                data: { email: email },
+              });
+            } catch (emailError) {
+              if (emailError instanceof Prisma.PrismaClientKnownRequestError &&
+                  emailError.code === "P2002") {
+                throw new Error(`Email ${email} is already in use by another user`);
+              }
+              throw emailError;
+            }
+          }
         }
 
-        this.redirectWithMessage(
-          res,
-          `/users/profile`,
-          "Profile updated successfully"
-        );
+        // Determine the appropriate redirect based on who is being updated and who is doing the updating
+        const isAdmin = req.user?.role === Role.ADMIN;
+        const isEditingOwnProfile = req.user?.id === userId;
+        
+        if (isAdmin && !isEditingOwnProfile) {
+          // Admin editing someone else's profile - redirect to users list
+          this.redirectWithMessage(
+            res,
+            `/users`,
+            "Profile updated successfully"
+          );
+        } else {
+          // User editing their own profile - redirect to profile page
+          this.redirectWithMessage(
+            res,
+            `/users/profile`,
+            "Profile updated successfully"
+          );
+        }
       } catch (error) {
         console.error("Failed to update profile:", error);
+        
+        let errorMessage = "Failed to update profile";
+        
+        // Provide more specific error messages
+        if (error instanceof Error) {
+          if (error.message.includes("already in use")) {
+            errorMessage = error.message;
+          } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            const target = error.meta?.target as string[] | undefined;
+            if (error.code === 'P2002' && target && target.includes('email')) {
+              errorMessage = "This email is already registered to another user";
+            } else if (error.code === 'P2002' && target && target.includes('username')) {
+              errorMessage = "This username is already taken";
+            }
+          }
+        }
+        
         this.render(res, "users/edit", {
           user: { ...req.body, id: userId },
           isAdmin: req.user?.role === Role.ADMIN,
           roles: Object.values(Role),
-          error: "Failed to update profile",
+          error: errorMessage,
         });
       }
     });

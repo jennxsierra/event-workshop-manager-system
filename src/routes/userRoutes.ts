@@ -23,6 +23,12 @@ export class UserRouter extends BaseRouter {
       "/profile",
       this.controller.updateProfile.bind(this.controller)
     );
+    
+    // Add POST route for updating specific users (for the form submission)
+    this.router.post(
+      "/:id",
+      this.controller.updateProfile.bind(this.controller)
+    );
 
     // Keep the PUT route for backwards compatibility
     this.router.put(
