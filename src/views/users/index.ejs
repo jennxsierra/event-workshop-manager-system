@@ -41,11 +41,11 @@
                                 </td>
                                 <td><%= user.organization || '—' %></td>
                                 <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="/users/<%= user.id %>/edit" class="btn btn-outline-primary">Edit</a>
+                                    <div class="d-flex">
+                                        <a href="/users/<%= user.id %>/edit" class="btn btn-sm btn-outline-primary me-2">Edit</a>
                                         <% if(locals.user && locals.user.id !== user.id && locals.user.role === 'ADMIN') { %>
-                                            <form action="/users/<%= user.id %>?_method=DELETE" method="POST" class="ms-1">
-                                                <button type="submit" class="btn btn-outline-danger confirm-action"
+                                            <form action="/users/<%= user.id %>?_method=DELETE" method="POST">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger confirm-action"
                                                         data-confirm="Are you sure you want to delete this user?">
                                                     Delete
                                                 </button>
@@ -73,8 +73,9 @@
 <% function getRoleBadgeClass(role) {
     switch(role) {
         case 'ADMIN': return 'danger';
-        case 'STAFF': return 'warning';
-        case 'USER': return 'info';
+        case 'STAFF': return 'success';
+        case 'PARTICIPANT': return 'info';
+        case 'USER': return 'primary';
         default: return 'secondary';
     }
 } %>

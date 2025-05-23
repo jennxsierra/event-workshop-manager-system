@@ -33,6 +33,42 @@ main {
     letter-spacing: 0.5px;
 }
 
+/* Improve button styling in user list */
+.btn-group .btn {
+    border-radius: var(--border-radius);
+    margin-right: 2px;
+}
+
+/* Make PARTICIPANT and STAFF badges more distinct */
+.badge.bg-success {
+    background-color: #198754 !important; /* Darker green for STAFF */
+}
+
+.badge.bg-info {
+    background-color: #0dcaf0 !important; /* Brighter blue for PARTICIPANT */
+}
+
+/* Add a subtle transition effect to badges */
+.badge {
+    transition: all 0.2s ease;
+    padding: 0.35em 0.65em;
+}
+
+.badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Ensure strong color contrast between PARTICIPANT and STAFF badges */
+.badge.bg-success {
+    color: white;
+}
+
+.badge.bg-info {
+    color: #212529;
+    font-weight: 600;
+}
+
 /* Footer customizations */
 footer {
     margin-top: auto;
