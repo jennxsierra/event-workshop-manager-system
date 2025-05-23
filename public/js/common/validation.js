@@ -22,6 +22,39 @@ const Validator = {
     const re = /^\+?[0-9]{10,15}$/;
     return re.test(phone);
   },
+  
+  /**
+   * Adds a toggle password visibility button (eye icon) to a password field
+   * @param {string} passwordFieldId - ID of the password input field
+   */
+  setupPasswordToggle(passwordFieldId) {
+    const passwordField = document.getElementById(passwordFieldId);
+    if (!passwordField) return;
+    
+    // Create container for the password field with relative positioning
+    const container = document.createElement('div');
+    container.className = 'password-toggle-container position-relative';
+    
+    // Create the eye icon button
+    const toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.className = 'password-toggle-btn btn btn-outline-secondary bg-transparent border-0 position-absolute end-0 top-0 d-flex align-items-center h-100';
+    toggleBtn.style.zIndex = '5';
+    toggleBtn.innerHTML = '<i class="bi bi-eye"></i>';
+    toggleBtn.setAttribute('aria-label', 'Toggle password visibility');
+    
+    // Replace the password field with the container
+    passwordField.parentNode.insertBefore(container, passwordField);
+    container.appendChild(passwordField);
+    container.appendChild(toggleBtn);
+    
+    // Setup the toggle functionality
+    toggleBtn.addEventListener('click', () => {
+      const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordField.setAttribute('type', type);
+      toggleBtn.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+    });
+  },
 
   /**
    * Validates a password strength
@@ -68,5 +101,23 @@ const Validator = {
   },
 };
 
+/**
+ * Initialize password toggles for all password fields on the page
+ */
+function initPasswordToggles() {
+  const passwordFields = document.querySelectorAll('input[type="password"]');
+  passwordFields.forEach(field => {
+    if (field.id) {
+      Validator.setupPasswordToggle(field.id);
+    }
+  });
+}
+
+// Initialize password toggles when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+  initPasswordToggles();
+});
+
 // Export for global use
 window.Validator = Validator;
+window.initPasswordToggles = initPasswordToggles;
